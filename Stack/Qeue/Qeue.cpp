@@ -93,7 +93,6 @@ int main(){
 		std::cin >> cmd;
 
 		if (cmd == "exit"){
-			//queue.del;
 			break;
 		}
 
@@ -112,7 +111,8 @@ int main(){
 		if (cmd == "peek"){
 			std::cout << queue.peek() << " on the top of stack" << std::endl;
 		}
+		
 	}
-	//queue.del;
+	queue.del();
 	return 0;
 }
