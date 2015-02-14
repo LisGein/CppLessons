@@ -13,7 +13,11 @@ public:
 
 	}
 
-	void firstpush(int felement){
+	void firstpush(int MAX_SIZ){
+		MAX_SIZE = MAX_SIZ;
+		std::cout << "Your stack is empty, so enter the first element of the arrayenter" << std::endl;
+		int  felement;
+		std::cin >> felement;
 		head_++;
 		tail_++;
 		queue_[tail_] = felement;
@@ -44,16 +48,22 @@ public:
 		return queue_[head_];
 	}
 
+	void del() {
+		delete [] queue_;
+
+	}
 
 	bool empty() const{
 
 	}
 
+
+
 private:
 	int head_;
 	int tail_;
-	static const int MAX_SIZE = 10;
-	int queue_[MAX_SIZE];
+	int MAX_SIZE;
+	int *queue_ = new int[MAX_SIZE];
 };
 
 
@@ -62,10 +72,17 @@ int main(){
 	Queue queue;
 	std::string cmd;
 
+	/*std::cout << "Enter the size of the array" << std::endl;
+	int MAX_SIZE;
+	std::cin >> MAX_SIZE;
+	queue.MAX_SIZE;
 	std::cout << "Your stack is empty, so enter the first element of the arrayenter" << std::endl;
 	int felement;
-	std::cin >> felement;
-	queue.firstpush(felement);
+	std::cin >> felement;*/
+	std::cout << "Enter the size of the array" << std::endl;
+	int MAX_SIZ;
+	std::cin >> MAX_SIZ;
+	queue.firstpush(MAX_SIZ);
 
 	std::cout << "If you want to shift the coin up, then push enter" << std::endl;
 	std::cout << "If you want to remove the top coin, enter the pop" << std::endl;
@@ -76,6 +93,7 @@ int main(){
 		std::cin >> cmd;
 
 		if (cmd == "exit"){
+			//queue.del;
 			break;
 		}
 
@@ -84,6 +102,7 @@ int main(){
 			int value;
 			std::cin >> value;
 			queue.push(value);
+		
 		}
 
 		if (cmd == "pop"){
@@ -94,5 +113,6 @@ int main(){
 			std::cout << queue.peek() << " on the top of stack" << std::endl;
 		}
 	}
+	//queue.del;
 	return 0;
 }
