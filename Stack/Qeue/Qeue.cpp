@@ -4,7 +4,7 @@
 class Queue
 {
 public:
-	Queue()
+	Queue(int max_size)
 		:head_(0), tail_(-1), max_size_(max_size), queue_(new int[max_size_])
 	{
 
@@ -13,10 +13,7 @@ public:
 		delete[] queue_;
 	}
 
-	void firstpush(int max_size){
-		max_size_ = max_size;
-		
-	}
+	
 
 	void push(int value){
 		if (tail_ == max_size_ - 1){
@@ -31,7 +28,7 @@ public:
 	}
 
 	void pop(){
-		if (head_ == -1){
+		if (head_ > tail_){
 			std::cout << "Cant pop, stack is null!" << std::endl;
 			return;
 		}
@@ -62,14 +59,12 @@ private:
 
 
 int main(){
-
-	Queue queue;
+	std::cout << "Enter the size of the array" << std::endl;
+	int size;
+	std::cin >> size;
+	Queue queue(size);
 	std::string cmd;
 
-	std::cout << "Enter the size of the array" << std::endl;
-	int MAX_SIZ;
-	std::cin >> MAX_SIZ;
-	queue.firstpush(MAX_SIZ);
 
 	std::cout << "If you want to shift the coin up, then push enter" << std::endl;
 	std::cout << "If you want to remove the top coin, enter the pop" << std::endl;
