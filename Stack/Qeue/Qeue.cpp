@@ -5,7 +5,7 @@ class Queue
 {
 public:
 	Queue(int max_size)
-		:head_(0), tail_(-1), size_(0), max_size_(max_size), queue_(new int[max_size_])
+		:head_(0), tail_(-1), size_(0), max_size_(max_size), queue_(new std::string[max_size_])
 	{
 
 	}
@@ -15,7 +15,7 @@ public:
 
 	
 
-	void push(int value){
+	void push(std::string value){
 
 		if (size_==max_size_) {
 			std::cout << "Cant push, stack is full!" << std::endl;
@@ -62,7 +62,7 @@ public:
 		
 	}
 
-	int peek() const {
+	std::string peek() const {
 		if (tail_ == -1){
 			std::cout << "Cant peek, stack is null!" << std::endl;
 		}
@@ -87,7 +87,8 @@ private:
 	int tail_;
 	int max_size_;
 	int max_size;
-	int *queue_ = new int[max_size_];
+	std::string value1;
+	std::string *queue_ = new std::string[max_size_];
 	
 };
 
@@ -114,7 +115,7 @@ int main(){
 
 		if (cmd == "push"){
 			std::cout << "Enter the nominal value" << std::endl;
-			int value;
+			std::string value;
 			std::cin >> value;
 			queue.push(value);
 		
