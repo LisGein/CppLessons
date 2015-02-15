@@ -97,39 +97,46 @@ int main(){
 	std::cout << "Enter the size of the array" << std::endl;
 	int size;
 	std::cin >> size;
-	Queue queue(size);
-	std::string cmd;
+	if ((size > 0) && (size <= 4294967295)){
+		Queue queue(size);
 
 
-	std::cout << "If you want to shift the coin up, then push enter" << std::endl;
-	std::cout << "If you want to remove the top coin, enter the pop" << std::endl;
-	std::cout << "If you want to see the top of the coin, enter peek" << std::endl;
-	std::cout << "If you want to complete the program, type exit" << std::endl;
+		std::string cmd;
 
-	while (true){
-		std::cin >> cmd;
 
-		if (cmd == "exit"){
-			break;
+		std::cout << "If you want to shift the coin up, then push enter" << std::endl;
+		std::cout << "If you want to remove the top coin, enter the pop" << std::endl;
+		std::cout << "If you want to see the top of the coin, enter peek" << std::endl;
+		std::cout << "If you want to complete the program, type exit" << std::endl;
+
+		while (true){
+			std::cin >> cmd;
+
+			if (cmd == "exit"){
+				break;
+			}
+
+			if (cmd == "push"){
+				std::cout << "Enter the nominal value" << std::endl;
+				std::string value;
+				std::cin >> value;
+				queue.push(value);
+
+			}
+
+			if (cmd == "pop"){
+				queue.pop();
+			}
+
+			if (cmd == "peek"){
+				queue.peek();
+			}
+
 		}
-
-		if (cmd == "push"){
-			std::cout << "Enter the nominal value" << std::endl;
-			std::string value;
-			std::cin >> value;
-			queue.push(value);
-		
-		}
-
-		if (cmd == "pop"){
-			queue.pop();
-		}
-
-		if (cmd == "peek"){
-			queue.peek();
-		}
-		
 	}
-	
+	else {
+		std::cout << "You have entered the wrong array size!" << std::endl;	
+		system ("pause");
+	}
 	return 0;
 }
