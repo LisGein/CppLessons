@@ -16,30 +16,52 @@ public:
 	
 
 	void push(int value){
-		if (tail_ == max_size_ - 1){
+		if ((head_ + tail_ + 1 == max_size_) || ((head_ -1 == tail_)&&(tail_>-1))){
 			std::cout << "Cant push, stack is full!" << std::endl;
 			return;
 		}
 		else{
-
+			if (tail_ + 1 == max_size_){
+				tail_ = 0;
+				queue_[tail_] = value;
+			   }
+			else{
 				tail_++;
 				queue_[tail_] = value;
+			    }
 			}
 	}
 
 	void pop(){
-		if (head_ > tail_){
-			std::cout << "Cant pop, stack is null!" << std::endl;
-			return;
+		
+
+		if (head_ == tail_){
+			tail_ = -1;
+			head_ = 0;
 		}
 		else{
-			head_++;
+			if ((head_ == 0) && (tail_ == -1)){
+				std::cout << "Cant pop, stack is null!" << std::endl;
+				return;
+			}
+			else{
+				head_++;
+			}
+
 		}
+		
 	}
 
 	int peek() const {
-		std::cout << queue_[head_] << std::endl;
-		return queue_[head_];
+		if (tail_ == -1){
+			std::cout << "Cant peek, stack is null!" << std::endl;
+		}
+		else{
+			std::cout << queue_[head_];
+			std::cout <<" on the top of stack" << std::endl;
+			return queue_[head_];
+
+		}
 	}
 
 
@@ -55,6 +77,7 @@ private:
 	int max_size_;
 	int max_size;
 	int *queue_ = new int[max_size_];
+	
 };
 
 
@@ -91,7 +114,7 @@ int main(){
 		}
 
 		if (cmd == "peek"){
-			std::cout << queue.peek() << " on the top of stack" << std::endl;
+			queue.peek();
 		}
 		
 	}
