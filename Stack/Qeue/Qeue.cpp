@@ -16,9 +16,8 @@ public:
 	
 
 	void push(int value){
+
 		if (size_==max_size_) {
-			
-			//((tail_>head_)&&(head_ + tail_ + 1 == max_size_) || ((head_ -1 == tail_)&&(tail_>-1)) || ((head_== tail_ ++)&&(head_>tail_))){
 			std::cout << "Cant push, stack is full!" << std::endl;
 			return;
 		}
@@ -27,13 +26,14 @@ public:
 				tail_ = 0;
 				size_++;
 				queue_[tail_] = value;
-			   }
+			}
 			else{
 				tail_++;
 				size_++;
 				queue_[tail_] = value;
-			    }
 			}
+		}
+
 	}
 
 	void pop(){
@@ -49,7 +49,7 @@ public:
 				head_ = 0;
 			}
 			else {
-				if ((head_ == 0) && (tail_ == -1)){
+				if (size_ == 0){
 					std::cout << "Cant pop, stack is null!" << std::endl;
 					return;
 				}
@@ -57,9 +57,7 @@ public:
 					size_--;
 					head_++;
 				}
-			
-			}
-			
+			}	
 		}
 		
 	}
