@@ -5,7 +5,7 @@ class Queue
 {
 public:
 	Queue(int max_size)
-		:head_(0), tail_(-1), max_size_(max_size), queue_(new int[max_size_])
+		:head_(0), tail_(-1), size_(0), max_size_(max_size), queue_(new int[max_size_])
 	{
 
 	}
@@ -16,17 +16,21 @@ public:
 	
 
 	void push(int value){
-		if ((head_ + tail_ + 1 == max_size_) || ((head_ -1 == tail_)&&(tail_>-1))){
+		if (size_==max_size_) {
+			
+			//((tail_>head_)&&(head_ + tail_ + 1 == max_size_) || ((head_ -1 == tail_)&&(tail_>-1)) || ((head_== tail_ ++)&&(head_>tail_))){
 			std::cout << "Cant push, stack is full!" << std::endl;
 			return;
 		}
 		else{
 			if (tail_ + 1 == max_size_){
 				tail_ = 0;
+				size_++;
 				queue_[tail_] = value;
 			   }
 			else{
 				tail_++;
+				size_++;
 				queue_[tail_] = value;
 			    }
 			}
@@ -38,16 +42,24 @@ public:
 		if (head_ == tail_){
 			tail_ = -1;
 			head_ = 0;
+			size_ = 0;
 		}
 		else{
-			if ((head_ == 0) && (tail_ == -1)){
-				std::cout << "Cant pop, stack is null!" << std::endl;
-				return;
+			if (head_ == max_size_ - 1){
+				head_ = 0;
 			}
-			else{
-				head_++;
+			else {
+				if ((head_ == 0) && (tail_ == -1)){
+					std::cout << "Cant pop, stack is null!" << std::endl;
+					return;
+				}
+				else{
+					size_--;
+					head_++;
+				}
+			
 			}
-
+			
 		}
 		
 	}
@@ -72,6 +84,7 @@ public:
 
 
 private:
+	int size_;
 	int head_;
 	int tail_;
 	int max_size_;
