@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stack", "Stack\Stack.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Qeue", "Qeue\Qeue.vcxproj", "{9C6A9438-8A12-4866-96A5-26C618C90ACE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vector", "Vector\Vector.vcxproj", "{12CED580-4386-4372-BEA6-D0108F5143D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +23,10 @@ Global
 		{9C6A9438-8A12-4866-96A5-26C618C90ACE}.Debug|Win32.Build.0 = Debug|Win32
 		{9C6A9438-8A12-4866-96A5-26C618C90ACE}.Release|Win32.ActiveCfg = Release|Win32
 		{9C6A9438-8A12-4866-96A5-26C618C90ACE}.Release|Win32.Build.0 = Release|Win32
+		{12CED580-4386-4372-BEA6-D0108F5143D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{12CED580-4386-4372-BEA6-D0108F5143D2}.Debug|Win32.Build.0 = Debug|Win32
+		{12CED580-4386-4372-BEA6-D0108F5143D2}.Release|Win32.ActiveCfg = Release|Win32
+		{12CED580-4386-4372-BEA6-D0108F5143D2}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
