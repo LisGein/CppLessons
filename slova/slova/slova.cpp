@@ -8,36 +8,43 @@ int main()
 {
 	std::ifstream in("C:\\Users\\LisGein\\Documents\\Beavis and Butt Head.txt");
 	std::string line;
-	std::vector<int> count(27, 0);
-	int x = 0;
-	char z;
-	int y = 0;
+	std::vector<int> count(26, 0);
+	int summ = 0;
+	int MaxTimes = 0;
+	int NameAlpha = 0;
+	char MaxName;
 	while (std::getline(in, line))
 	{
 		for (int i = 0; i < line.size(); ++i)
 		{
 			if (isalpha(line[i]))
 			{
-				
+				summ += 1;
 				char current = (char)tolower(line[i]);
-				y = static_cast<int>(current)- 96;
-				count[y] += 1;
+				count[current-'a'] += 1;
 			}				
 		}
 	}
-	for (int i = 0; i <= 26; ++i)
+	if ( summ > 0)
 	{
-		if (count[i] > 0){
-			y = i + 96;
-			std::cout << static_cast<char> (y) << " - " << count[i] << std::endl;
-		}
-		if (count[i] > x)
+		for (int i = 0; i < count.size(); ++i)
 		{
-			z = static_cast<char>(i);
-			x = count[i];
+			if (count[i] > 0){
+				NameAlpha = i + 'a';
+				std::cout << static_cast<char> (NameAlpha) << " - " << count[i] << std::endl;
+			}
+			if (count[i] > MaxTimes)
+			{
+				MaxName = static_cast<char>(i);
+				MaxTimes = count[i];
+			}
 		}
+		std::cout << "The greatest number of repetition letters: " << MaxName << " - " << MaxTimes << " times." << std::endl;
 	}
-	std::cout << "The greatest number of repetition letters: " << z << " - " << x << " times." << std::endl;
+	else
+	{
+		std::cout << "File is empty!" << std::endl;
+	}
 	system("pause");
 	return 0;
 }
