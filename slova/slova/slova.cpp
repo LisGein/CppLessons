@@ -12,7 +12,7 @@ int main()
 	int summ = 0;
 	int MaxTimes = 0;
 	int NameAlpha = 0;
-	char MaxName;
+	char MaxName = 'a';
 	while (std::getline(in, line))
 	{
 		for (int i = 0; i < line.size(); ++i)
@@ -35,7 +35,7 @@ int main()
 			}
 			if (count[i] > MaxTimes)
 			{
-				MaxName = static_cast<char>(i);
+				MaxName = i + 'a';
 				MaxTimes = count[i];
 			}
 		}
