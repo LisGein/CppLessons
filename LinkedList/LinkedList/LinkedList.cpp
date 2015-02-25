@@ -7,14 +7,16 @@ class Node //создание класса Node
 	friend class LinkedList;
 public:
 	Node()
+		: next_(nullptr),
+		prev_(nullptr)
 	{
 	}
 	~Node()
 	{
 	}
+private:
 	Node * next_;  //указатель на след. элемент
 	Node * prev_; // указатель на предыдущий элемент
-private:
 	std::string data;	
 };
 
@@ -24,36 +26,49 @@ public:
 	LinkedList()
 		:head_(nullptr), // первый элемент
 		tail_(nullptr),  //последний элемент
-		capacity_(0)
+		capacity_(1)
 	{
 	}
 	~LinkedList()
 	{
 	}
-	void push_front(std::string const & data_)
+	void new_node(std::string const & data_)
 	{
-		Node * push_front = new Node();  // создание указателяна объект в классе Node
-		push_front->data = data_; //объявление текущего элемента 
-		if (head_ == NULL) //если очередь пустая
+		Node * new_node = new Node();  // создание указателяна объект в классе Node
+		new_node->data = data_; //объявление текущего элемента 
+		if (head_ == nullptr) //если очередь пустая
 		{
-			push_front->next_ = push_front; // то функции next_ объекта push_front(push_front.next_) присваивается значение текущего элемента
-			tail_ = push_front; // последним элементом назначается текущий элемент
-			head_ = push_front; //и первым элементом назначается текущий элемент
+
+			head_ = new_node;
+			tail_ = new_node;
 			capacity_++;
+			/*new_node->next_ = new_node; // то функции next_ объекта push_front(push_front.next_) присваивается значение текущего элемента
+			tail_ = new_node; // последним элементом назначается текущий элемент
+			head_ = new_node; //и первым элементом назначается текущий элемент
+			capacity_++;*/
 		}
 		else
 		{
+			//for (capacity_; capacity_>1; capacity_--)
+				//head_ = head_->prev_;
+			new_node->next_ = head_;
+			head_->next_->prev_ = new_node;
+			head_ = new_node;
+			head_->prev_ = nullptr;
+			capacity_++;
+			
+			/*
 			Node *p = head_; // присвоение указателю на объект p адрес первой переменной
 
 			for (capacity_; capacity_>1; capacity_--)
 				p = p->prev_;//присвоение каждой p предыдущий p
-			p->next_->prev_ = push_front; //присваивание текущего элемента очереди как значение предыдущего для следующего #извините(с)
-			push_front->next_ = p->next_; //вот тут вот...
-			push_front->prev_ = p; //... я запутылась
-			p->next_ = push_front; // указателю на следующий объект присваивается указатель на текущий объект
-			head_ = push_front; //первым элементом назначается текущий элемент		
+			p->next_->prev_ = new_node; //присваивание текущего элемента очереди как значение предыдущего для следующего #извините(с)
+			new_node->next_ = head_->next_; //вот тут вот...
+			new_node->prev_ = p; //... я запутылась
+			p->next_ = new_node; // указателю на следующий объект присваивается указатель на текущий объект
+			head_ = new_node; //первым элементом назначается текущий элемент		
 			capacity_++;
-			// в целом всё это выглядит отвратно...
+			// в целом всё это выглядит отвратно...*/
 		}
 	}
 	void peek()
@@ -100,7 +115,7 @@ int main()
 			std::string name;
 			std::cout << "Enter name" << std::endl;
 			std::cin >> name;
-			list.push_front(name);
+			list.new_node(name);
 
 		}
 		if (cmd == "peek")
