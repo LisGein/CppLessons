@@ -26,8 +26,7 @@ class LinkedList
 public:
 	LinkedList()
 		:head_(nullptr), // первый элемент
-		tail_(nullptr),  //последний элемент
-		capacity_(0)
+		tail_(nullptr)  //последний элемент
 	{
 	}
 	~LinkedList()
@@ -72,7 +71,10 @@ public:
 		}
 		else
 		{
-			head_ = head_->next_;
+			Node * node = new Node();
+			node = head_->next_;
+			delete head_;
+			head_ = node;
 			std::cout << "Deleted\n";
 		}
 	}
@@ -80,7 +82,6 @@ private:
 
 	Node * head_;
 	Node * tail_;
-	int capacity_;//число всех элементов очереди
 };
 
 int main()
