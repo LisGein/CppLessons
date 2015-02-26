@@ -71,7 +71,7 @@ public:
 		}
 		else
 		{
-			Node * node = new Node();
+			Node * node;
 			node = head_->next_;
 			delete head_;
 			head_ = node;
