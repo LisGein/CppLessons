@@ -7,17 +7,15 @@ class Node
 public:
 	Node()
 	{
-
 	}
 	~Node()
 	{
-
 	}
-
 private:
 	Node * next_;
 	Node * prev_;
 	std::string name;
+	std::string n_;
 };
 
 class FindFunc
@@ -27,11 +25,9 @@ public:
 		:head_(nullptr),
 		tail_(nullptr)
 	{
-
 	}
 	~FindFunc()
 	{
-
 	}
 	void push(std::string const &name_)
 	{
@@ -66,7 +62,6 @@ public:
 	}
 	void peek()
 	{
-
 		if (head_ == nullptr)
 			std::cout << "Empty!\n";
 		else
@@ -81,7 +76,7 @@ public:
 		}
 	}
 
-	Node find(std::string const &names)
+	Node *find(std::string const &names)
 	{
 		if (head_ == nullptr)
 		{
@@ -94,7 +89,7 @@ public:
 			{
 				if(f -> name == names)
 				{
-					break;
+					return f;
 				}
 			   else
 			   {
@@ -102,20 +97,42 @@ public:
 			   }
 			}
 			return f;
-			std::cout << f << " -f/n";
 		}
 	}
 	void erase(Node *n)
 	{
-		Node * next_node;
-		next_node = n->next_;
-		Node * prev_node;
-		prev_node = n->prev_;
-		delete n;
-		n = next_node;
-		n = prev_node;
-		std::cout << "Deleted\n";
-
+		if (head_ == tail_)
+		{
+			delete n;
+			head_ = nullptr;
+			tail_ = head_;
+		}
+		else
+		{
+			if (n == head_)
+			{
+				head_ = n->next_;
+				delete n;
+				head_->prev_ = nullptr;
+			}
+			else
+			{
+				if (n == tail_)
+				{
+					tail_ = n->prev_;
+					delete n;
+					tail_->next_ = nullptr;
+				}
+				else
+				{
+					Node * n_prev = n->prev_;
+					Node * n_next = n->next_;
+					delete n;
+					n_next->prev_ = n_prev;
+					n_prev->next_ = n_next;
+				}
+			}
+		}
 	}
 private:
 	Node * head_;
@@ -153,21 +170,19 @@ int main()
 		}
 		if (cmd == "erase")
 		{
-
 			std::string names;
 			std::cout << "Enter names" << std::endl;
 			std::cin >> names;
-			func.find(names);
 			Node *n = func.find(names);
 			if (n != nullptr)
 				func.erase(n);
-
+			else
+				std::cout << "Bug!" << std::endl;
 		}
 		if (cmd == "exit")
 		{
 			break;
 		}
-
 	}
 	return 0;
 }
