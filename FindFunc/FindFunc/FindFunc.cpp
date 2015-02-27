@@ -57,7 +57,6 @@ public:
 			node = head_->next_;
 			delete head_;
 			head_ = node;
-			std::cout << "Deleted\n";
 		}
 	}
 	void peek()
@@ -73,6 +72,7 @@ public:
 				std::cout << a->name << " "; //вывод элемента находящегося по адресу head_
 				a = a->next_; // присвоение адресу а значение адреса а следуещего 
 			}
+			std::cout << "\n";
 		}
 	}
 
@@ -106,33 +106,39 @@ public:
 			delete n;
 			head_ = nullptr;
 			tail_ = head_;
+			return;
 		}
-		else
+		if (n == head_)
 		{
-			if (n == head_)
-			{
-				head_ = n->next_;
-				delete n;
-				head_->prev_ = nullptr;
-			}
-			else
-			{
-				if (n == tail_)
-				{
-					tail_ = n->prev_;
-					delete n;
-					tail_->next_ = nullptr;
-				}
-				else
-				{
-					Node * n_prev = n->prev_;
-					Node * n_next = n->next_;
-					delete n;
-					n_next->prev_ = n_prev;
-					n_prev->next_ = n_next;
-				}
-			}
+			head_ = n->next_;
+			delete n;
+			head_->prev_ = nullptr;
+			return;
 		}
+			
+		if (n == tail_)
+		{
+			tail_ = n->prev_;
+			delete n;
+			tail_->next_ = nullptr;
+			return;
+		}
+		Node * n_prev = n->prev_;
+		Node * n_next = n->next_;
+		delete n;
+		n_next->prev_ = n_prev;
+		n_prev->next_ = n_next;
+	}
+	void delall()
+	{
+		while (head_ != nullptr)
+		{
+			Node * node;
+			node = head_->next_;
+			delete head_;
+			head_ = node;
+		}
+
 	}
 private:
 	Node * head_;
@@ -143,46 +149,62 @@ int main()
 {
 	FindFunc func;
 	std::string cmd;
-	std::cout << "Enter cmd" << std::endl;
+	std::string propriety;
+	std::cout << "If you want to add element to queue, type push\n"
+		<< "If you want to remove the first element, enter the pop\n"
+		<< "If you want to see the first element, enter peek\n"
+		<< "If you want delete all elements, enter delete\n"
+		<< "If you want delete element, enter erase\n"
+		<< "If you want to leave the program, type exit"
+		<< std::endl;
+
 	while (true)
 	{
 		std::cin >> cmd;
+		propriety = "repeat cmd";
 		if (cmd == "push")
 		{
 			std::string name;
 			std::cout << "Enter name" << std::endl;
 			std::cin >> name;
 			func.push(name);
-		}
-		if (cmd == "delete")
-		{
-			std::string name;
-			std::cout << "Enter name" << std::endl;
-			std::cin >> name;
+			propriety = "Added";
 		}
 		if (cmd == "peek")
 		{
 			func.peek();
+			propriety = "\n";
 		}
 		if (cmd == "pop")
 		{
 			func.pop();
+			propriety = "Delete head_";
 		}
 		if (cmd == "erase")
 		{
 			std::string names;
 			std::cout << "Enter names" << std::endl;
 			std::cin >> names;
-			Node *n = func.find(names);
-			if (n != nullptr)
+			Node *n;
+			n = func.find(names);
+			while (n != nullptr)
+			{
 				func.erase(n);
-			else
-				std::cout << "Bug!" << std::endl;
+				n = func.find(names);
+			}
+			propriety = "Erase";
+
 		}
 		if (cmd == "exit")
 		{
 			break;
 		}
+		if (cmd == "delete")
+		{
+			propriety = "Delete all";
+			func.delall();
+		}
+		std::cout << propriety << std::endl;
 	}
 	return 0;
 }
