@@ -15,36 +15,31 @@ public:
 	Ball(sf::Vector2f const &pos, sf::Vector2f const &speed, float size, sf::Color const &color)
 		:speed_(speed),
 		Shapes(size),
-		size_(size)
-		
-
-		
+		size_(size),
+		pos_(pos)
 	{
 		Shapes.setPosition(pos);
-		Shapes.move(speed_);
-		//Shapes.setRadius(size_);
 		Shapes.setFillColor(color);
 	};
 	
 	void update(float dt)
 	{
-		sf::Vector2f pos_ = Shapes.getPosition();
 		if (pos_.y > WINDOW_HEIGHT - size_ * 2)
 		{
-			speed_ = sf::Vector2f(speed_.x, -speed_.y);//пол
+			speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол
 		}
 		if (pos_.x > WINDOW_WIDTH - size_ * 2)
 		{
-			speed_ = sf::Vector2f(-speed_.x, speed_.y);//право
+			speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
 		}
 
 		if (pos_.y < 0) //потолок
 		{
-			speed_ = sf::Vector2f(speed_.x, -speed_.y);
+			speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
 		}
 		if (pos_.x < 0) //лево
 		{
-			speed_ = sf::Vector2f(-speed_.x, speed_.y);
+			speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
 		}
 
 			pos_ += speed_ * dt;
@@ -68,19 +63,19 @@ private:
 
 void init_all(std::vector<Ball> &Shapes, std::mt19937 &gen)
 {
-	for (int i = 0; i < 10; i++){
+	float size = 20;
 
-		float size(20);
-		std::uniform_int_distribution<> x_dist(0, WINDOW_WIDTH - size * 10);
-		std::uniform_int_distribution<> y_dist(0, WINDOW_HEIGHT - size * 10);
+	std::uniform_real_distribution<float> x_dist(0.f, WINDOW_WIDTH - 2 * size);
+	std::uniform_real_distribution<float> y_dist(0.f, WINDOW_HEIGHT - 2 * size);
+	std::uniform_int_distribution<> color_dist(0, 255);
+	std::uniform_real_distribution<float> sp_dist(-100, 100);
+
+	for (int i = 0; i < 1000; i++)
+	{
 		sf::Vector2f pos(x_dist(gen), y_dist(gen));
-		std::uniform_int_distribution<> x_sp(0, 200);
-		std::uniform_int_distribution<> y_sp(0, 200);
-		sf::Vector2f speed(x_sp(gen), y_sp(gen));
-		std::uniform_int_distribution<> x_color(0, 255);
-		std::uniform_int_distribution<> y_color(0, 255);
-		std::uniform_int_distribution<> z_color(0, 255);
-		sf::Color color(x_color(gen), y_color(gen), z_color(gen));
+		sf::Vector2f speed(sp_dist(gen), sp_dist(gen));
+		sf::Color color(color_dist(gen), color_dist(gen), color_dist(gen));
+
 		Shapes.push_back(Ball(pos, speed, size, color));
 	}
 }
@@ -110,6 +105,7 @@ int main()
 	std::mt19937 gen(rd());
 	init_all(Shapes, gen);
 	float last_up = clock.getElapsedTime().asSeconds();
+
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -118,7 +114,6 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
-		
 		update_all(last_up, Shapes, clock);
 		window.clear();
 		draw_all(Shapes);
