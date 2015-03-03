@@ -8,6 +8,18 @@ const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
 
+class rectangle
+{
+public:
+	rectangle();
+	
+	void draw(sf::RenderWindow &window)
+	{
+		//window.draw(Rect);
+	}
+private:
+	sf::IntRect Rect;
+};
 
 class Ball
 {
@@ -63,19 +75,28 @@ private:
 
 void init_all(std::vector<Ball> &Shapes, std::mt19937 &gen)
 {
-	float size = 20;
+	std::uniform_real_distribution<float> rect_dist(5, 25);
+	int height_rect = rect_dist(gen);
+	int wedth_rect = rect_dist(gen);
+	sf::IntRect(height_rect, height_rect, wedth_rect, wedth_rect);
+	std::uniform_real_distribution<float> x_coor(0.f, WINDOW_WIDTH);
 
-	std::uniform_real_distribution<float> x_dist(0.f, WINDOW_WIDTH - 2 * size);
-	std::uniform_real_distribution<float> y_dist(0.f, WINDOW_HEIGHT - 2 * size);
+
+
+
 	std::uniform_int_distribution<> color_dist(0, 255);
-	std::uniform_real_distribution<float> sp_dist(-100, 100);
+	std::uniform_real_distribution<float> sp_dist(-300, 300);
 
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 30; i++)
 	{
+		std::uniform_real_distribution<float> size_dist(5, 25);
+		float size = size_dist(gen);
+		std::uniform_real_distribution<float> x_dist(0.f, WINDOW_WIDTH - 2 * size);
+		std::uniform_real_distribution<float> y_dist(0.f, WINDOW_HEIGHT - 2 * size);
 		sf::Vector2f pos(x_dist(gen), y_dist(gen));
 		sf::Vector2f speed(sp_dist(gen), sp_dist(gen));
 		sf::Color color(color_dist(gen), color_dist(gen), color_dist(gen));
-
+		
 		Shapes.push_back(Ball(pos, speed, size, color));
 	}
 }
