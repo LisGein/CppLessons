@@ -8,17 +8,28 @@ const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
 
-class rectangle
+class rectanglss
 {
 public:
-	rectangle();
-	
-	void draw(sf::RenderWindow &window)
+	rectanglss(sf::Vector2f const &pos, sf::Vector2f const &size, sf::Color const &color)
+		:Rect_(size),
+		size_(size),
+		pos_(pos)
 	{
-		//window.draw(Rect);
+		Rect_.setPosition(pos);
+		Rect_.setFillColor(color);
+		
+	};
+	
+	void _draw(sf::RenderWindow &window)
+	{
+		window.draw(Rect_);
 	}
+
 private:
-	sf::IntRect Rect;
+	sf::RectangleShape Rect_;
+	sf::Vector2i pos_;
+	sf::Vector2i size_;
 };
 
 class Ball
@@ -72,24 +83,37 @@ private:
 	std::string color_;
 	
 };
-
+void init_rect(std::vector<rectanglss> &Rect, std::mt19937 &gen)
+{
+	std::uniform_real_distribution<float> rect_dist_x(40, 80);
+	std::uniform_real_distribution<float> rect_dist_y(20, 40);
+	std::uniform_int_distribution<> color_dist(0, 255);
+	std::uniform_real_distribution<float> x_coor(0.f, WINDOW_WIDTH);
+	for (int i = 0; i < 30; i++)
+	{
+		sf::Color color(color_dist(gen), color_dist(gen), color_dist(gen));
+		sf::Vector2f pos(x_coor(gen), x_coor(gen));
+		sf::Vector2f size(rect_dist_x(gen), rect_dist_y(gen));
+		Rect.push_back(rectanglss(pos, size, color));
+	}
+}
+void draw_rect(std::vector<rectanglss> &Rect_)
+{
+	for (int i = 0; i < Rect_.size(); ++i)
+	{
+		Rect_[i]._draw(window);
+	}
+}
 void init_all(std::vector<Ball> &Shapes, std::mt19937 &gen)
 {
-	std::uniform_real_distribution<float> rect_dist(5, 25);
-	int height_rect = rect_dist(gen);
-	int wedth_rect = rect_dist(gen);
-	sf::IntRect(height_rect, height_rect, wedth_rect, wedth_rect);
-	std::uniform_real_distribution<float> x_coor(0.f, WINDOW_WIDTH);
-
-
 
 
 	std::uniform_int_distribution<> color_dist(0, 255);
-	std::uniform_real_distribution<float> sp_dist(-300, 300);
+	std::uniform_real_distribution<float> sp_dist(-100, 100);
 
 	for (int i = 0; i < 30; i++)
 	{
-		std::uniform_real_distribution<float> size_dist(5, 25);
+		std::uniform_real_distribution<float> size_dist(5, 10);
 		float size = size_dist(gen);
 		std::uniform_real_distribution<float> x_dist(0.f, WINDOW_WIDTH - 2 * size);
 		std::uniform_real_distribution<float> y_dist(0.f, WINDOW_HEIGHT - 2 * size);
@@ -120,10 +144,12 @@ void update_all(float &last_up, std::vector<Ball> &Shapes, sf::Clock &clock)
 }
 int main()
 {
+	std::vector<rectanglss> Rect_;
 	std::random_device rd;
 	sf::Clock clock;
 	std::vector<Ball> Shapes;
 	std::mt19937 gen(rd());
+	init_rect(Rect_, gen);
 	init_all(Shapes, gen);
 	float last_up = clock.getElapsedTime().asSeconds();
 
@@ -137,6 +163,7 @@ int main()
 		}
 		update_all(last_up, Shapes, clock);
 		window.clear();
+		draw_rect(Rect_);
 		draw_all(Shapes);
 		window.display();
 	}
