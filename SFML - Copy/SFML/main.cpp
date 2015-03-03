@@ -1,7 +1,6 @@
 ﻿#include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
-#include <Random>
 
 
 const int WINDOW_WIDTH = 640;
@@ -29,20 +28,20 @@ public:
 	void update(float dt)
 	{
 		sf::Vector2f pos_ = Shapes.getPosition();
-		if (pos_.y > WINDOW_HEIGHT - size_ * 2)
+		if (pos_.y >= WINDOW_HEIGHT - size_ * 2)
 		{
 			speed_ = sf::Vector2f(speed_.x, -speed_.y);//пол
 		}
-		if (pos_.x > WINDOW_WIDTH - size_ * 2)
+		if (pos_.x >= WINDOW_WIDTH - size_ * 2)
 		{
 			speed_ = sf::Vector2f(-speed_.x, speed_.y);//право
 		}
 
-		if (pos_.y < 0) //потолок
+		if (pos_.y <= 0) //потолок
 		{
 			speed_ = sf::Vector2f(speed_.x, -speed_.y);
 		}
-		if (pos_.x < 0) //лево
+		if (pos_.x <= 0) //лево
 		{
 			speed_ = sf::Vector2f(-speed_.x, speed_.y);
 		}
@@ -66,23 +65,18 @@ private:
 	
 };
 
-void init_all(std::vector<Ball> &Shapes, std::mt19937 &gen)
+void init_all(std::vector<Ball> &Shapes)
 {
-	for (int i = 0; i < 10; i++){
-
-		float size(20);
-		std::uniform_int_distribution<> x_dist(0, WINDOW_WIDTH - size * 10);
-		std::uniform_int_distribution<> y_dist(0, WINDOW_HEIGHT - size * 10);
-		sf::Vector2f pos(x_dist(gen), y_dist(gen));
-		std::uniform_int_distribution<> x_sp(0, 200);
-		std::uniform_int_distribution<> y_sp(0, 200);
-		sf::Vector2f speed(x_sp(gen), y_sp(gen));
-		std::uniform_int_distribution<> x_color(0, 255);
-		std::uniform_int_distribution<> y_color(0, 255);
-		std::uniform_int_distribution<> z_color(0, 255);
-		sf::Color color(x_color(gen), y_color(gen), z_color(gen));
-		Shapes.push_back(Ball(pos, speed, size, color));
-	}
+	sf::Vector2f pos(0, 0);
+	sf::Vector2f speed (50, 50);
+	float size(20);
+	sf::Color color = sf::Color::Blue;
+	Shapes.push_back(Ball(pos,speed,size,color));
+	//pos = sf::Vector2f(640, 480);
+	//speed = sf::Vector2f(-50, -50);
+	//float size(25.f);
+	//sf::Color color = sf::Color::Green;
+	//Shapes.push_back(Ball(pos,speed,size,color));
 }
 void draw_all(std::vector<Ball> &Shapes)
 {
@@ -104,11 +98,9 @@ void update_all(float &last_up, std::vector<Ball> &Shapes, sf::Clock &clock)
 }
 int main()
 {
-	std::random_device rd;
 	sf::Clock clock;
 	std::vector<Ball> Shapes;
-	std::mt19937 gen(rd());
-	init_all(Shapes, gen);
+	init_all(Shapes);
 	float last_up = clock.getElapsedTime().asSeconds();
 	while (window.isOpen())
 	{
