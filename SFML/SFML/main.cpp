@@ -15,9 +15,6 @@ public:
 	virtual void draw(sf::RenderWindow &window) = 0;
 };
 
-
-
-
 class Rectangle  //класс - прямоугольник
 	:public MovingShape
 {
@@ -27,11 +24,9 @@ public:
 		rect_(size),
 		size_(size),
 		pos_(pos)
-
 	{
 		rect_.setPosition(pos);
-		rect_.setFillColor(color);
-		
+		rect_.setFillColor(color);	
 	};
 	void update(float dt)
 	{
@@ -54,7 +49,6 @@ public:
 	{
 		window.draw(rect_);
 	}
-
 private:
 	sf::RectangleShape rect_;
 	sf::Vector2f pos_;
@@ -79,16 +73,16 @@ public:
 	void update(float dt)
 	{
 		if (pos_.y > WINDOW_HEIGHT - size_ * 2)
-		speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол
+			speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол
 		
 		if (pos_.x > WINDOW_WIDTH - size_ * 2)
-		speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
+			speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
 		
 		if (pos_.y < 0) //потолок
-		speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
+			speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
 		
 		if (pos_.x < 0) //лево
-		speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
+			speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
 		
 		pos_ += speed_ * dt;
 		circle_.setPosition(pos_);	
@@ -97,8 +91,6 @@ public:
 	{
 		window.draw(circle_);
 	}
-
-
 private:
 	sf::CircleShape circle_;
 	sf::Vector2f speed_;
@@ -132,18 +124,12 @@ void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen)  //опр�
 
 		shapes.push_back(new Ball(pos, speed, size, color));
 		shapes.push_back(new Rectangle(pos_, speed, size_, color));
-
-
 	}
 }
 void draw_all(std::vector <MovingShape *> shapes)
 {
-	
 	for (int i = 0; i < shapes.size(); ++i)
-	{
 		shapes[i]->draw(window);
-	}
-
 }
 void update_all(float &last_up, std::vector <MovingShape *> shapes, sf::Clock &clock)
 {
@@ -151,17 +137,13 @@ void update_all(float &last_up, std::vector <MovingShape *> shapes, sf::Clock &c
 	float dt = static_cast<float>(times - last_up);
 	last_up = times;
 	for (int i = 0; i < shapes.size(); ++i)
-	{
 		shapes[i] -> update(dt);
-	}
 }
 int main()
 {
 	std::vector <MovingShape *> shapes;
-	std::vector<Rectangle> rect_;
-	std::random_device rd;
 	sf::Clock clock;
-	std::vector<Ball> circle_;
+	std::random_device rd;
 	std::mt19937 gen(rd());
 	init_all(shapes, gen);
 
