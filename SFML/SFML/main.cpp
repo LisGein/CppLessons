@@ -4,8 +4,8 @@
 #include <Random>
 
 
-const int WINDOW_WIDTH = 640;
-const int WINDOW_HEIGHT = 480;
+const int WINDOW_WIDTH = 800;
+const int WINDOW_HEIGHT = 680;
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
 
 class MovingShape
@@ -14,31 +14,63 @@ public:
 	virtual void update(float dt) = 0;
 	virtual void draw(sf::RenderWindow &window) = 0;
 };
+class Sprite  // класс - sprite
+	:public MovingShape
+{
+public:
+	Sprite(sf::Vector2f const &pos, sf::Vector2f const &speed, sf::Texture &texture)
+		:speed_(speed),
+		pos_(pos)
+	{
+		sprite_.setPosition(pos);
+		sprite_.setTexture(texture);
+	};
+	void update(float dt)
+	{
+		if (pos_.y >  WINDOW_HEIGHT - sprite_.getLocalBounds().height)
+			speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол
+		if (pos_.x > WINDOW_WIDTH - sprite_.getLocalBounds().width)
+			speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
+		if (pos_.y < 0) //потолок
+			speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
+		if (pos_.x < 0) //лево
+			speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
+
+		pos_ += speed_ * dt;
+		sprite_.setPosition(pos_);
+	}
+	void draw(sf::RenderWindow &window)
+	{
+		window.draw(sprite_);
+	}
+private:
+	sf::Sprite sprite_;
+	sf::Vector2f pos_;
+	sf::Vector2f speed_;
+
+};
 
 class Rectangle  //класс - прямоугольник
 	:public MovingShape
 {
 public:
 	Rectangle(sf::Vector2f const &pos, sf::Vector2f const &speed, sf::Vector2f const &size, sf::Color const &color)
-		:speed_(speed), 
+		:speed_(speed),
 		rect_(size),
 		size_(size),
 		pos_(pos)
 	{
 		rect_.setPosition(pos);
-		rect_.setFillColor(color);	
+		rect_.setFillColor(color);
 	};
 	void update(float dt)
 	{
 		if (pos_.y > WINDOW_HEIGHT - size_.y)
 			speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол
-
 		if (pos_.x > WINDOW_WIDTH - size_.x)
 			speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
-
 		if (pos_.y < 0) //потолок
 			speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
-
 		if (pos_.x < 0) //лево
 			speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
 
@@ -69,23 +101,20 @@ public:
 		circle_.setPosition(pos);
 		circle_.setFillColor(color);
 	};
-	
+
 	void update(float dt)
 	{
 		if (pos_.y > WINDOW_HEIGHT - size_ * 2)
 			speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол
-		
 		if (pos_.x > WINDOW_WIDTH - size_ * 2)
 			speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
-		
 		if (pos_.y < 0) //потолок
 			speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
-		
 		if (pos_.x < 0) //лево
 			speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
-		
+
 		pos_ += speed_ * dt;
-		circle_.setPosition(pos_);	
+		circle_.setPosition(pos_);
 	}
 	void draw(sf::RenderWindow &window)
 	{
@@ -98,7 +127,7 @@ private:
 	float size_;
 };
 
-void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen)  //определение всех переменных для мячей
+void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen, sf::Texture &texture, sf::Texture &texture_)  //определение всех переменных для мячей
 {
 	std::uniform_int_distribution<> color_dist(0, 255);
 	std::uniform_real_distribution<float> sp_dist(-100, 100);
@@ -109,7 +138,7 @@ void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen)  //опр�
 		sf::Vector2f speed(sp_dist(gen), sp_dist(gen));
 		sf::Color color(color_dist(gen), color_dist(gen), color_dist(gen));
 		//для шаров:
-		std::uniform_real_distribution<float> size_dist(5, 10);  
+		std::uniform_real_distribution<float> size_dist(5, 10);
 		float size = size_dist(gen);
 		std::uniform_real_distribution<float> x_dist(0.f, WINDOW_WIDTH - 2 * size);
 		std::uniform_real_distribution<float> y_dist(0.f, WINDOW_HEIGHT - 2 * size);
@@ -121,7 +150,13 @@ void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen)  //опр�
 		std::uniform_real_distribution<float> x_coor(0.f, WINDOW_WIDTH - size_.x);
 		std::uniform_real_distribution<float> y_coor(0.f, WINDOW_HEIGHT - size_.y);
 		sf::Vector2f pos_(x_coor(gen), y_coor(gen));
+		// для Sprite:
+		std::uniform_real_distribution<float> x_coor_(0.f, WINDOW_WIDTH / 3);
+		std::uniform_real_distribution<float> y_coor_(0.f, WINDOW_HEIGHT / 3);
+		sf::Vector2f _pos(x_coor_(gen), y_coor_(gen));
+		texture.loadFromFile("C:\\Users\\LisGein\\Pictures\\RedApple.png");
 
+		shapes.push_back(new Sprite(_pos, speed, texture));
 		shapes.push_back(new Ball(pos, speed, size, color));
 		shapes.push_back(new Rectangle(pos_, speed, size_, color));
 	}
@@ -137,7 +172,7 @@ void update_all(float &last_up, std::vector <MovingShape *> shapes, sf::Clock &c
 	float dt = static_cast<float>(times - last_up);
 	last_up = times;
 	for (int i = 0; i < shapes.size(); ++i)
-		shapes[i] -> update(dt);
+		shapes[i]->update(dt);
 }
 int main()
 {
@@ -145,7 +180,9 @@ int main()
 	sf::Clock clock;
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	init_all(shapes, gen);
+	sf::Texture texture;
+	sf::Texture texture_;
+	init_all(shapes, gen, texture, texture_);
 
 	float last_up = clock.getElapsedTime().asSeconds();
 
