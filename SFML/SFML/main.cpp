@@ -4,15 +4,83 @@
 #include <Random>
 
 
-const int WINDOW_WIDTH = 800;
+
+const int WINDOW_WIDTH = 1250;
 const int WINDOW_HEIGHT = 680;
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
+sf::VertexArray triangle(sf::Triangles, 3);
 
 class MovingShape
 {
 public:
 	virtual void update(float dt) = 0;
 	virtual void draw(sf::RenderWindow &window) = 0;
+};
+
+class Trigl
+	:public MovingShape
+{
+public:
+	Trigl(sf::Vector2f const &pos1, sf::Vector2f const &pos2, sf::Vector2f const &pos3, sf::Vector2f const &speed, sf::Color &color1, sf::Color &color2, sf::Color &color3)
+		:speed_(speed)
+	{
+		triangle.setPrimitiveType(sf::Triangles);
+		triangle[0].position = pos1;
+		triangle[1].position = pos2;
+		triangle[2].position = pos3;
+		triangle[0].color = color1;
+		triangle[1].color = color2;
+		triangle[2].color = color3;
+	};
+	void update(float dt)
+	{
+
+	}
+	void draw(sf::RenderWindow &window)
+	{
+		window.draw(triangle);
+	}
+
+private:
+
+	sf::Vector2f speed_;
+};
+
+
+class SpriteCosmos  // класс - sprite
+	:public MovingShape
+{
+public:
+	SpriteCosmos(sf::Vector2f const &pos, sf::Vector2f const &speed, sf::Texture &texture)
+		:speed_(speed),
+		pos_(pos)
+	{
+		sprite_cosmos.setPosition(pos);
+		sprite_cosmos.setTexture(texture);
+	};
+	void update(float dt)
+	{
+		if (pos_.y >  WINDOW_HEIGHT - sprite_cosmos.getLocalBounds().height)
+			speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол
+		if (pos_.x > WINDOW_WIDTH - sprite_cosmos.getLocalBounds().width)
+			speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
+		if (pos_.y < 0) //потолок
+			speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
+		if (pos_.x < 0) //лево
+			speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
+
+		pos_ += speed_ * dt;
+		sprite_cosmos.setPosition(pos_);
+	}
+	void draw(sf::RenderWindow &window)
+	{
+		window.draw(sprite_cosmos);
+	}
+private:
+	sf::Sprite sprite_cosmos;
+	sf::Vector2f pos_;
+	sf::Vector2f speed_;
+
 };
 class Sprite  // класс - sprite
 	:public MovingShape
@@ -132,7 +200,7 @@ void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen, sf::Textur
 	std::uniform_int_distribution<> color_dist(0, 255);
 	std::uniform_real_distribution<float> sp_dist(-100, 100);
 
-	for (int i = 0; i < 30; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		//общие:
 		sf::Vector2f speed(sp_dist(gen), sp_dist(gen));
@@ -150,15 +218,31 @@ void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen, sf::Textur
 		std::uniform_real_distribution<float> x_coor(0.f, WINDOW_WIDTH - size_.x);
 		std::uniform_real_distribution<float> y_coor(0.f, WINDOW_HEIGHT - size_.y);
 		sf::Vector2f pos_(x_coor(gen), y_coor(gen));
+		texture_.loadFromFile("C:\\Users\\LisGein\\Pictures\\sprite.jpg");
 		// для Sprite:
 		std::uniform_real_distribution<float> x_coor_(0.f, WINDOW_WIDTH / 3);
 		std::uniform_real_distribution<float> y_coor_(0.f, WINDOW_HEIGHT / 3);
 		sf::Vector2f _pos(x_coor_(gen), y_coor_(gen));
 		texture.loadFromFile("C:\\Users\\LisGein\\Pictures\\RedApple.png");
+		// для многоугольников:
+		std::uniform_int_distribution<> xcoor(0, WINDOW_WIDTH);
+		std::uniform_int_distribution<> ycoor(0, WINDOW_HEIGHT);
+		sf::Vector2f coor(xcoor(gen), ycoor(gen));
+		//для треугольника
+		std::uniform_int_distribution<> pos_coor(10, 400);
+		int pos_1 = pos_coor(gen);
+		int pos_2 = pos_coor(gen);
+		sf::Vector2f pos_trigl1(pos_1, pos_1);
+		sf::Vector2f pos_trigl2(pos_2, pos_1);
+		sf::Vector2f pos_trigl3(pos_2, pos_2);
+		sf::Color color1(color_dist(gen), color_dist(gen), color_dist(gen));
+		sf::Color color2(color_dist(gen), color_dist(gen), color_dist(gen));
 
 		shapes.push_back(new Sprite(_pos, speed, texture));
+		shapes.push_back(new SpriteCosmos(_pos, speed, texture_));
 		shapes.push_back(new Ball(pos, speed, size, color));
 		shapes.push_back(new Rectangle(pos_, speed, size_, color));
+		shapes.push_back(new Trigl(pos_trigl1, pos_trigl2, pos_trigl3, speed, color1, color2, color));
 	}
 }
 void draw_all(std::vector <MovingShape *> shapes)
