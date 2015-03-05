@@ -8,29 +8,30 @@
 const int WINDOW_WIDTH = 1250;
 const int WINDOW_HEIGHT = 680;
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
-sf::VertexArray triangle(sf::Triangles, 3);
 
 class MovingShape
 {
 public:
 	virtual void update(float dt) = 0;
 	virtual void draw(sf::RenderWindow &window) = 0;
+	virtual void on_key_pressed(sf::Keyboard::Key const &code, bool press) = 0;
 };
-
 class Trigl
 	:public MovingShape
 {
 public:
-	Trigl(sf::Vector2f const &pos1, sf::Vector2f const &pos2, sf::Vector2f const &pos3, sf::Vector2f const &speed, sf::Color &color1, sf::Color &color2, sf::Color &color3)
+	Trigl(sf::VertexArray const &triangle, sf::Vector2f const &speed)
 		:speed_(speed)
+		
+	
 	{
-		triangle.setPrimitiveType(sf::Triangles);
-		triangle[0].position = pos1;
-		triangle[1].position = pos2;
-		triangle[2].position = pos3;
-		triangle[0].color = color1;
-		triangle[1].color = color2;
-		triangle[2].color = color3;
+		/*triangle_.setPrimitiveType(sf::Triangles);
+		triangle_[0].position = pos1;
+		triangle_[1].position = pos2;
+		triangle_[2].position = pos3;
+		triangle_[0].color = color1;
+		triangle_[1].color = color2;
+		triangle_[2].color = color3;*/
 	};
 	void update(float dt)
 	{
@@ -38,15 +39,17 @@ public:
 	}
 	void draw(sf::RenderWindow &window)
 	{
-		window.draw(triangle);
+		window.draw(_triangle);
 	}
 
 private:
-
 	sf::Vector2f speed_;
+	sf::VertexArray _triangle;
+	sf::Vector2f pos_1;
+	sf::Vector2f pos_2;
+	sf::Vector2f pos_3;
+
 };
-
-
 class SpriteCosmos  // класс - sprite
 	:public MovingShape
 {
@@ -88,7 +91,8 @@ class Sprite  // класс - sprite
 public:
 	Sprite(sf::Vector2f const &pos, sf::Vector2f const &speed, sf::Texture &texture)
 		:speed_(speed),
-		pos_(pos)
+		pos_(pos),
+		speedtest(speed_)
 	{
 		sprite_.setPosition(pos);
 		sprite_.setTexture(texture);
@@ -106,16 +110,45 @@ public:
 
 		pos_ += speed_ * dt;
 		sprite_.setPosition(pos_);
+		
 	}
 	void draw(sf::RenderWindow &window)
 	{
 		window.draw(sprite_);
 	}
+	void on_key_pressed(sf::Keyboard::Key const &code, bool press)
+	{
+		
+		if (press){
+			int speed_value = 15;
+			if (code == sf::Keyboard::Up)
+				speed_ = sf::Vector2f(0, -abs(speed_value * speedtest.y));
+			if (code == sf::Keyboard::Down)
+				speed_ = sf::Vector2f(0, abs(speed_value * speedtest.y));
+			if (code == sf::Keyboard::Right)
+				speed_ = sf::Vector2f(abs(speed_value * speedtest.x), 0);
+			if (code == sf::Keyboard::Left)
+				speed_ = sf::Vector2f(-abs(speed_value * speedtest.x), 0);
+		}
+		if (!press){
+			int speed_value = 15;
+			if (code == sf::Keyboard::Up)
+				speed_ = sf::Vector2f(0, -abs (speedtest.y));
+			if (code == sf::Keyboard::Down)
+				speed_ = sf::Vector2f(0, abs( speedtest.y));
+			if (code == sf::Keyboard::Right)
+				speed_ = sf::Vector2f(abs( speedtest.x), 0);
+			if (code == sf::Keyboard::Left)
+				speed_ = sf::Vector2f(-abs( speedtest.x), 0);
+		}
+	}
 private:
 	sf::Sprite sprite_;
 	sf::Vector2f pos_;
 	sf::Vector2f speed_;
-
+	sf::Event event;
+	sf::Vector2f speedtest;
+	sf::Vector2f acceleration_;
 };
 
 class Rectangle  //класс - прямоугольник
@@ -200,8 +233,8 @@ void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen, sf::Textur
 	std::uniform_int_distribution<> color_dist(0, 255);
 	std::uniform_real_distribution<float> sp_dist(-100, 100);
 
-	for (int i = 0; i < 1; i++)
-	{
+	//for (int i = 0; i < 1; i++)
+	//{
 		//общие:
 		sf::Vector2f speed(sp_dist(gen), sp_dist(gen));
 		sf::Color color(color_dist(gen), color_dist(gen), color_dist(gen));
@@ -238,18 +271,35 @@ void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen, sf::Textur
 		sf::Color color1(color_dist(gen), color_dist(gen), color_dist(gen));
 		sf::Color color2(color_dist(gen), color_dist(gen), color_dist(gen));
 
+
+		sf::VertexArray triangle_(sf::Triangles, 3);
+		triangle_[0].position = pos_trigl1;
+		triangle_[1].position = pos_trigl2;
+		triangle_[2].position = pos_trigl3;
+		triangle_[0].color = color;
+		triangle_[1].color = color1;
+		triangle_[2].color = color2;
+
 		shapes.push_back(new Sprite(_pos, speed, texture));
-		shapes.push_back(new SpriteCosmos(_pos, speed, texture_));
-		shapes.push_back(new Ball(pos, speed, size, color));
-		shapes.push_back(new Rectangle(pos_, speed, size_, color));
-		shapes.push_back(new Trigl(pos_trigl1, pos_trigl2, pos_trigl3, speed, color1, color2, color));
-	}
+		//shapes.push_back(new SpriteCosmos(_pos, speed, texture_));
+		//shapes.push_back(new Ball(pos, speed, size, color));
+		//shapes.push_back(new Rectangle(pos_, speed, size_, color));
+		//shapes.push_back(new Trigl(triangle_, speed));
+
+
+	//}
 }
 void draw_all(std::vector <MovingShape *> shapes)
 {
 	for (int i = 0; i < shapes.size(); ++i)
 		shapes[i]->draw(window);
 }
+void on_key_pressed(std::vector <MovingShape *> shapes, sf::Keyboard::Key const &code, bool press)
+{
+	
+	for (int i = 0; i < shapes.size(); ++i)
+		shapes[i]->on_key_pressed(code, press);
+};
 void update_all(float &last_up, std::vector <MovingShape *> shapes, sf::Clock &clock)
 {
 	float times = clock.getElapsedTime().asSeconds();
@@ -266,6 +316,7 @@ int main()
 	std::mt19937 gen(rd());
 	sf::Texture texture;
 	sf::Texture texture_;
+	bool press = false;
 	init_all(shapes, gen, texture, texture_);
 
 	float last_up = clock.getElapsedTime().asSeconds();
@@ -275,9 +326,17 @@ int main()
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
+			if (event.type == sf::Event::KeyPressed)
+				press = true;
+			if (event.type == sf::Event::KeyReleased)
+				press = false;
+			
+			on_key_pressed(shapes, event.key.code, press);
+			
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
+
 		update_all(last_up, shapes, clock);
 		window.clear();
 		draw_all(shapes);

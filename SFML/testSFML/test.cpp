@@ -15,22 +15,21 @@ class MovingShape
 public:
 	virtual void update(float dt) = 0;
 	virtual void draw(sf::RenderWindow &window) = 0;
+	
 };
 
-class Trigl
+class Lines
 	:public MovingShape
 {
 public:
-	Trigl(sf::Vector2f const &pos1, sf::Vector2f const &pos2, sf::Vector2f const &pos3, sf::Vector2f const &speed, sf::Color &color1, sf::Color &color2, sf::Color &color3)
+	Lines(sf::Vector2f const &pos1, sf::Vector2f const &pos2, sf::Vector2f const &pos3, sf::Vector2f const &speed)
 		:speed_(speed)
 	{
 		triangle.setPrimitiveType(sf::Triangles);
 		triangle[0].position = pos1;
 		triangle[1].position = pos2;
 		triangle[2].position = pos3;
-		triangle[0].color = color1;
-		triangle[1].color = color2;
-		triangle[2].color = color3;
+
 	};
 	void update(float dt)
 	{
@@ -47,17 +46,12 @@ private:
 };
 void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen)  //определение всех переменных для мячей
 {
-	
+	std::uniform_real_distribution<float> sp_dist(-100, 100);
+	//общие:
+	sf::Vector2f speed(sp_dist(gen), sp_dist(gen));
 
 	for (int i = 0; i < 1000; i++)
 	{
-		std::uniform_int_distribution<> color_dist(0, 255);
-		std::uniform_real_distribution<float> sp_dist(-100, 100);
-		//общие:
-		sf::Vector2f speed(sp_dist(gen), sp_dist(gen));
-		sf::Color color(color_dist(gen), color_dist(gen), color_dist(gen));
-		sf::Color color1(color_dist(gen), color_dist(gen), color_dist(gen));
-		sf::Color color2(color_dist(gen), color_dist(gen), color_dist(gen));
 		std::uniform_int_distribution<> pos_coor(10, 300);
 		int pos_1 = pos_coor(gen);
 		int pos_2 = pos_coor(gen);
@@ -65,7 +59,7 @@ void init_all(std::vector <MovingShape *> &shapes, std::mt19937 &gen)  //опр�
 		sf::Vector2f pos_trigl2(pos_2, pos_1);
 		sf::Vector2f pos_trigl3(pos_2, pos_2);
 
-		shapes.push_back(new Trigl(pos_trigl1, pos_trigl2, pos_trigl3, speed, color1, color2, color));
+		shapes.push_back(new Lines(pos_trigl1, pos_trigl2, pos_trigl3, speed));
 	}
 }
 void draw_all(std::vector <MovingShape *> shapes)
