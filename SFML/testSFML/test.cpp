@@ -38,7 +38,6 @@ private:
 	sf::Vector2f speed_;
 };
 
-
 class MovingShape
 {
 public:
@@ -121,71 +120,6 @@ public:
 
 	};
 
-class Sprite  // класс - sprite
-	:public MovingShape
-{
-public:
-	Sprite(sf::Vector2f const &pos, sf::Vector2f const &speed, sf::Texture &texture)
-		:speed_(speed),
-		pos_(pos),
-		speedtest(speed_)
-	{
-		sprite_.setPosition(pos);
-		sprite_.setTexture(texture);
-	};
-	void update(float dt)
-	{
-		if (pos_.y >  WINDOW_HEIGHT - sprite_.getLocalBounds().height)
-			speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол
-		if (pos_.x > WINDOW_WIDTH - sprite_.getLocalBounds().width)
-			speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
-		if (pos_.y < 0) //потолок
-			speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
-		if (pos_.x < 0) //лево
-			speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
-
-		pos_ += speed_ * dt;
-		sprite_.setPosition(pos_);
-
-	}
-	void draw(sf::RenderWindow &window)
-	{
-		window.draw(sprite_);
-	}
-	void on_key_pressed(sf::Keyboard::Key const &code, bool press)
-	{
-
-		if (press){
-			int speed_value = 15;
-			if (code == sf::Keyboard::Up)
-				speed_ = sf::Vector2f(0, -abs(speed_value * speedtest.y));
-			if (code == sf::Keyboard::Down)
-				speed_ = sf::Vector2f(0, abs(speed_value * speedtest.y));
-			if (code == sf::Keyboard::Right)
-				speed_ = sf::Vector2f(abs(speed_value * speedtest.x), 0);
-			if (code == sf::Keyboard::Left)
-				speed_ = sf::Vector2f(-abs(speed_value * speedtest.x), 0);
-		}
-		if (!press){
-			int speed_value = 15;
-			if (code == sf::Keyboard::Up)
-				speed_ = sf::Vector2f(0, -abs(speedtest.y));
-			if (code == sf::Keyboard::Down)
-				speed_ = sf::Vector2f(0, abs(speedtest.y));
-			if (code == sf::Keyboard::Right)
-				speed_ = sf::Vector2f(abs(speedtest.x), 0);
-			if (code == sf::Keyboard::Left)
-				speed_ = sf::Vector2f(-abs(speedtest.x), 0);
-		}
-	}
-private:
-	sf::Sprite sprite_;
-	sf::Vector2f pos_;
-	sf::Vector2f speed_;
-	sf::Event event;
-	sf::Vector2f speedtest;
-	sf::Vector2f acceleration_;
-};
 void init_all(std::vector <Obj *> &rect, std::vector <MovingShape *> &shapes, std::mt19937 &gen, sf::Texture &texture)  //определение всех переменных для мячей
 {
 	
