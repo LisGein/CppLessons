@@ -10,5 +10,5 @@ public:
 	void draw(sf::RenderWindow &window) const;
 private:
 	World * world_;
-	sf::VertexArray line_;
+	sf::VertexArray lines_;
 };

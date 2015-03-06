@@ -11,7 +11,7 @@ World::World()
 
 sf::Vector2i World::window_size() const
 {
-	return world_size_ * static_cast<int>(ceil(cell_size_));
+	return world_size_ * static_cast<int>(ceil(cell_size_)); //ceil - округление вверх
 }
 
 sf::Vector2i World::world_size() const
