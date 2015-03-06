@@ -84,21 +84,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="draw_all.cpp" />
     <ClCompile Include="Food.cpp" />
-    <ClCompile Include="global.cpp" />
-    <ClCompile Include="Gride.cpp" />
-    <ClCompile Include="init_food.cpp" />
-    <ClCompile Include="init_gride.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="World.cpp" />
     <ClCompile Include="Zmeika.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="draw_all.h" />
     <ClInclude Include="Food.h" />
-    <ClInclude Include="global.h" />
-    <ClInclude Include="Gride.h" />
-    <ClInclude Include="init_food.h" />
-    <ClInclude Include="init_gride.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

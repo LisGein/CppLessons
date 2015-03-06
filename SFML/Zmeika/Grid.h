@@ -1,16 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-class World;
 
-class Food
+class World; //forward declaration
+
+class Grid
 {
 public:
-	Food(World * world);
+	Grid(World * world);
 	void draw(sf::RenderWindow &window) const;
-	void set_random_pos();
-
 private:
 	World * world_;
-	sf::Vector2i pos_;
-	sf::RectangleShape rect_;
+	sf::VertexArray line_;
 };
