@@ -4,11 +4,11 @@
 
 Food::Food(World * world) 
 	: world_(world)
-	, rect_(sf::Vector2f(world->cell_size(), world->cell_size()))
+	, rect_(sf::Vector2f(world->cell_size(), world->cell_size())) //задаем размер еды
 {
 	std::uniform_int_distribution<> clr_dist(0, 255);
 	sf::Color food_color(clr_dist(world_->rnd_gen()), clr_dist(world_->rnd_gen()), clr_dist(world_->rnd_gen()));
-	rect_.setFillColor(food_color);
+	rect_.setFillColor(food_color);// цвет еды
 
 	set_random_pos();
 };

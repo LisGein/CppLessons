@@ -86,12 +86,14 @@
   <ItemGroup>
     <ClCompile Include="Food.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="Shake.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="Zmeika.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Food.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="Shake.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -29,6 +29,8 @@ private:
 	sf::VertexArray _triangle;
 };
 
+
+
 void init_all(std::vector <MovingShape *> &lines, std::mt19937 &gen)  //определение всех переменных для мячей
 {
 	int sum_line_x = (WINDOW_WIDTH / 30);//количество линий по х
