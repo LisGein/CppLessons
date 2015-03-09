@@ -1,20 +1,24 @@
 ﻿#include "Snake.h"
 #include "World.h"
 
+Snake::Snake(World * world)
+	: world_(world)
+	, size_(world_->cell_size(), world_->cell_size())
+	, speed_(1, 0)
+	, next_step(0)
+	, pos_(world_->cell_size(), world_->cell_size())
+{
+	snake_.push_back(pos_);
+};
+
 Snake::SnakeSegment::SnakeSegment(sf::Vector2f pos_)
-:rect(sf::Vector2f(world_->cell_size(), world_->cell_size()))
+:rect_(sf::Vector2f(world_->cell_size(), world_->cell_size()))
 	{
-		rect.setPosition(pos.x * world_->cell_size(), pos.y * world_->cell_size());
+		rect_.setPosition(pos.x * world_->cell_size(), pos.y * world_->cell_size());
 	}
 
-Snake::Snake(World * world)
-	:world_(world)
-{
-	sf::Vector2f size(world_->cell_size(), world_->cell_size());
-	sf::Vector2f speed(1, 0);
-	sf::Vector2f _pos(0, 0);
-};
-void Snake::update(float dt)
+
+void Snake::update(World * world, float dt)
 {
 	next_step = next_step + dt;
 	if (next_step >= 0.7)
@@ -29,15 +33,15 @@ void Snake::update(float dt)
 			speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
 		pos_ += speed_;
 		next_step = 0;
-		snake.push_back(pos_);
-		snake.pop_front();
+		snake_.push_back(pos_);
+		//snake_.pop_front();
 	}
 }
 void Snake::draw(sf::RenderWindow &window) const
 {
-	for (int i = 0; i < snake.size(); i++)
+	for (int i = 0; i < snake_.size(); i++)
 	{
-		window.draw(snake[i].rect);
+		window.draw(snake_[i].rect_);
 	}
 }
 

@@ -43,14 +43,7 @@ void World::draw_all(sf::RenderWindow &window) const
 
 }
 
-void Snake::on_key_pressed(sf::Keyboard::Key const &code)
+void World::on_key_pressed(sf::Keyboard::Key code, bool press)
 {
-	if (code == sf::Keyboard::Up)
-		speed_ = sf::Vector2f(0, -1);
-	if (code == sf::Keyboard::Down)
-		speed_ = sf::Vector2f(0, 1);
-	if (code == sf::Keyboard::Right)
-		speed_ = sf::Vector2f(1, 0);
-	if (code == sf::Keyboard::Left)
-		speed_ = sf::Vector2f(-1, 0);
+
 }
