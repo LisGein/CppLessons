@@ -4,6 +4,7 @@
 
 #include "Grid.h"
 #include "Food.h"
+#include "Snake.h"
 
 class World
 {
@@ -29,4 +30,5 @@ private:
 private:
 	Grid grid_;
 	Food food_;
+	Snake snake_;
 };

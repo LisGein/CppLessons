@@ -6,6 +6,7 @@ World::World()
 	, gen_(rd_())
 	, grid_(this)
 	, food_(this)
+	, snake_(this)
 {
 }
 
@@ -38,9 +39,18 @@ void World::draw_all(sf::RenderWindow &window) const
 {
 	food_.draw(window);
 	grid_.draw(window);
+	snake_.draw(window);
+
 }
 
-void World::on_key_pressed(sf::Keyboard::Key code, bool press)
+void Snake::on_key_pressed(sf::Keyboard::Key const &code)
 {
-
+	if (code == sf::Keyboard::Up)
+		speed_ = sf::Vector2f(0, -1);
+	if (code == sf::Keyboard::Down)
+		speed_ = sf::Vector2f(0, 1);
+	if (code == sf::Keyboard::Right)
+		speed_ = sf::Vector2f(1, 0);
+	if (code == sf::Keyboard::Left)
+		speed_ = sf::Vector2f(-1, 0);
 }
