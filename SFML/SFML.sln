@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test2", "test2\test2.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zmeika", "Zmeika\Zmeika.vcxproj", "{A9417E23-913B-4F93-AC85-762DC4E15C9F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "deque", "deque\deque.vcxproj", "{0CF309A0-5814-4FB2-A943-C2A0F4DADC1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,6 +35,10 @@ Global
 		{A9417E23-913B-4F93-AC85-762DC4E15C9F}.Debug|Win32.Build.0 = Debug|Win32
 		{A9417E23-913B-4F93-AC85-762DC4E15C9F}.Release|Win32.ActiveCfg = Release|Win32
 		{A9417E23-913B-4F93-AC85-762DC4E15C9F}.Release|Win32.Build.0 = Release|Win32
+		{0CF309A0-5814-4FB2-A943-C2A0F4DADC1C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0CF309A0-5814-4FB2-A943-C2A0F4DADC1C}.Debug|Win32.Build.0 = Debug|Win32
+		{0CF309A0-5814-4FB2-A943-C2A0F4DADC1C}.Release|Win32.ActiveCfg = Release|Win32
+		{0CF309A0-5814-4FB2-A943-C2A0F4DADC1C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

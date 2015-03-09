@@ -1,74 +1,86 @@
 ﻿#include <SFML/Graphics.hpp>
 #include <vector>
 #include <Random>
+#include <deque>
+#include <iterator>
 
-const float pix = 25;
-const int WINDOW_WIDTH = 200;
-const int WINDOW_HEIGHT = 200;
+const float pix = 30;
+const int WINDOW_WIDTH = 300;
+const int WINDOW_HEIGHT = 300;
 sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
 
 class zmei
 {
+private:
+	struct SnakeSegment
+	{
+		SnakeSegment(sf::Vector2f pos_)
+			:pos(pos_)
+			,rect(sf::Vector2f(pix, pix))
+		{
+			rect.setPosition(pos.x * pix, pos.y * pix);
+		}
+		sf::Vector2i pos;
+		sf::RectangleShape rect;
+	};
+	std::deque<SnakeSegment> queque;
 public:
 	zmei(sf::Vector2f const &pos, sf::Vector2f const &speed, sf::Vector2f const &size, sf::Color const &color)
 		:speed_(speed)
-		,rect_(size)
 		,size_(size)
 		,pos_(pos)
-		,next_step(0,0)
-		, step(0)	
+		,next_step(0)
 	{
-		rect_.setPosition(pos_);
-		rect_.setFillColor(color);
-		rect_.move(speed_);
+		queque.push_back(pos_);
 	};
 	void update(float dt)
 	{
-		step = step + dt;
-		if (step >= 0.7)
+		next_step = next_step + dt;
+		if (next_step >= 0.7)
 		{
-			if (pos_.y > WINDOW_HEIGHT - (pix*2))
+			if (pos_.y > WINDOW_HEIGHT/pix -2)
 				speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол		
-			if (pos_.x > WINDOW_WIDTH - (pix * 2))
+			if (pos_.x > WINDOW_WIDTH/pix - 2)
 				speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
-			if (pos_.y < pix) //потолок
+			if (pos_.y < 1) //потолок
 				speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
-			if (pos_.x < pix) //лево
+			if (pos_.x < 1) //лево
 				speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
 			pos_ += speed_;
-			rect_.setPosition(pos_);
-			step = 0;
+			next_step = 0;
+			queque.push_back(pos_);
+			queque.pop_front();
 		}
 	}
 	void draw(sf::RenderWindow &window)
 	{
-		window.draw(rect_);
+		for (int i = 0; i < queque.size(); i++)
+		{
+			window.draw(queque[i].rect);
+		}
 	}
 	void on_key_pressed(sf::Keyboard::Key const &code)
 	{
 			if (code == sf::Keyboard::Up)
-				speed_ = sf::Vector2f(0, -pix);
+				speed_ = sf::Vector2f(0, -1);
 			if (code == sf::Keyboard::Down)
-				speed_ = sf::Vector2f(0, pix);
+				speed_ = sf::Vector2f(0, 1);
 			if (code == sf::Keyboard::Right)
-				speed_ = sf::Vector2f(pix, 0);
+				speed_ = sf::Vector2f(1, 0);
 			if (code == sf::Keyboard::Left)
-				speed_ = sf::Vector2f(-pix, 0);
+				speed_ = sf::Vector2f(-1, 0);
 	}
 	private:
-		sf::RectangleShape rect_;
 		sf::Vector2f pos_;
 		sf::Vector2f size_;
 		sf::Vector2f speed_;
-		float step;
-		sf::Vector2f next_step;
+		float next_step;
 	};
 
 void init_all(std::vector <zmei> &shapes, std::mt19937 &gen)
 {
 	sf::Vector2f size(pix, pix);
-	std::uniform_real_distribution<float> sp_dist(0, 1);
-	sf::Vector2f speed(pix, 0);
+	sf::Vector2f speed(1, 0);
 	sf::Vector2f _pos(0, 0);
 	sf::Color _color(10,100,250);
 	shapes.push_back(zmei(_pos, speed, size, _color));
