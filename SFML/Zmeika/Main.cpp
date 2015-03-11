@@ -12,13 +12,10 @@ int main()
 		sf::Event event; //подключение модуля события
 		while (window.pollEvent(event))//проверка нажатия на кнопку закрытия экрана
 		{
-			switch (event.type) 
+			switch (event.type)
 			{
 			case sf::Event::KeyPressed:  //выполнить если sf::Event::KeyPressed: == world.on_key_pressed(event.key.code, true);
-				world.on_key_pressed(event.key.code, true);
-				break;
-			case sf::Event::KeyReleased:
-				world.on_key_pressed(event.key.code, false);
+				world.on_key_pressed(event.key.code);
 				break;
 			case sf::Event::Closed:
 				window.close();
@@ -27,6 +24,7 @@ int main()
 				break;
 			}
 		}
+		world.update_all();
 
 		window.clear();
 		world.draw_all(window);

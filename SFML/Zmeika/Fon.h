@@ -2,18 +2,15 @@
 #include <SFML/Graphics.hpp>
 class World;
 
-class Food
+class Fon
 {
 public:
-	Food(World * world);
+	Fon(World * world);
 	void draw(sf::RenderWindow &window) const;
-	void set_random_pos();
-	sf::Vector2i get_pos () const;
 
 private:
 	World * world_;
 	sf::Vector2i pos_;
 	sf::RectangleShape rect_;
-	sf::Color color_;
-	sf::Texture texture_;
+	sf::Vector2i size_fon;
 };

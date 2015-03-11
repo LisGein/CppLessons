@@ -9,21 +9,26 @@ class Snake
 private:
 	struct SnakeSegment
 	{
-		SnakeSegment(sf::Vector2f pos_);
-		sf::Vector2i pos;
-		sf::RectangleShape rect_;
+		SnakeSegment(World * world, sf::Vector2i pos);
 		World * world_;
+		sf::Vector2i pos_;
+		sf::RectangleShape rect_;		
 	};
 	std::deque<SnakeSegment> snake_;
 public:
 	Snake(World * world);
-	void update(World * world, float dt);
+	void update(float time_);
+	bool is_alive() const;
 	void draw(sf::RenderWindow &window) const;
+	void on_key_pressed(sf::Keyboard::Key code);
 
 private:
 	World * world_;
-	sf::Vector2f pos_;
-	sf::Vector2f size_;
-	sf::Vector2f speed_;
-	float next_step;
+	sf::Vector2i pos_;
+	sf::Vector2i speed_;
+	float pres_step_;
+	int size_;
+	sf::Vector2f pos_head;
+	sf::Vector2f pos_next;
+	bool alive_;
 };

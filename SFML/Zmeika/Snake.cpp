@@ -2,47 +2,79 @@
 #include "World.h"
 
 Snake::Snake(World * world)
-	: world_(world)
-	, size_(world_->cell_size(), world_->cell_size())
-	, speed_(1, 0)
-	, next_step(0)
-	, pos_(world_->cell_size(), world_->cell_size())
+	: speed_(1, 0)
+	, pres_step_(0)
+	, pos_(0, 0)
+	, world_(world)
+	, size_(5)
+	, alive_(true)
 {
-	snake_.push_back(pos_);
+	snake_.push_back(SnakeSegment(world, pos_));
 };
 
-Snake::SnakeSegment::SnakeSegment(sf::Vector2f pos_)
-:rect_(sf::Vector2f(world_->cell_size(), world_->cell_size()))
-	{
-		rect_.setPosition(pos.x * world_->cell_size(), pos.y * world_->cell_size());
-	}
-
-
-void Snake::update(World * world, float dt)
+Snake::SnakeSegment::SnakeSegment(World * world, sf::Vector2i pos)
+	:rect_(sf::Vector2f(world->cell_size(), world->cell_size()))
+	,pos_(pos)
 {
-	next_step = next_step + dt;
-	if (next_step >= 0.7)
+	rect_.setPosition(pos_.x * world->cell_size(), pos_.y * world->cell_size());
+}
+
+void Snake::update(float time)
+{
+	if (time - pres_step_ >= 0.2)
 	{
-		if (pos_.y > world_->world_size().x / world_->cell_size() - 2)
-			speed_ = sf::Vector2f(speed_.x, -abs(speed_.y));//пол		
-		if (pos_.x > world_->world_size().y / world_->cell_size() - 2)
-			speed_ = sf::Vector2f(-abs(speed_.x), speed_.y);//право
-		if (pos_.y < 1) //потолок
-			speed_ = sf::Vector2f(speed_.x, abs(speed_.y));
-		if (pos_.x < 1) //лево
-			speed_ = sf::Vector2f(abs(speed_.x), speed_.y);
 		pos_ += speed_;
-		next_step = 0;
-		snake_.push_back(pos_);
-		//snake_.pop_front();
+		if (pos_.y > world_->world_size().y - 1)
+			pos_.y = 0;
+		if (pos_.x > world_->world_size().x - 1)
+			pos_.x = 0;
+		if (pos_.y < 0) //потолок
+			pos_.y = world_->world_size().y;
+		if (pos_.x < 0) //лево
+			pos_.x = world_->world_size().x;
+
+		pres_step_ = time;
+		snake_.push_back(SnakeSegment(world_, pos_));
+		if (world_->get_food()->get_pos() == pos_)
+		{
+			size_ += 3;
+			world_->get_food()->set_random_pos();
+		}
+		if (snake_.size() > size_)
+			snake_.pop_front();
+		pos_head = snake_[snake_.size() - 1].rect_.getPosition();
+		for (int i = 0; i < snake_.size() - 1; i++)
+		{
+			pos_next = snake_[i].rect_.getPosition();
+			if (pos_head == pos_next)
+				alive_ = false;
+
+		}
 	}
 }
+
+bool Snake::is_alive() const
+{
+	return alive_;
+}
+
 void Snake::draw(sf::RenderWindow &window) const
 {
-	for (int i = 0; i < snake_.size(); i++)
+	for (size_t i = 0; i < snake_.size(); i++)
 	{
 		window.draw(snake_[i].rect_);
 	}
 }
 
 
+void Snake::on_key_pressed(sf::Keyboard::Key code)
+{
+	if (code == sf::Keyboard::Up)
+		speed_ = sf::Vector2i(0, -1);
+	if (code == sf::Keyboard::Down)
+		speed_ = sf::Vector2i(0, 1);
+	if (code == sf::Keyboard::Right)
+		speed_ = sf::Vector2i(1, 0);
+	if (code == sf::Keyboard::Left)
+		speed_ = sf::Vector2i(-1, 0);
+}
