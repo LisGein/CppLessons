@@ -21,6 +21,7 @@ public:
 	bool is_alive() const;
 	void draw(sf::RenderWindow &window) const;
 	void on_key_pressed(sf::Keyboard::Key code);
+	int get_score() const;
 
 private:
 	World * world_;
@@ -29,4 +30,5 @@ private:
 	float pres_step_;
 	int size_;
 	bool alive_;
+	int score_;
 };

@@ -15,7 +15,7 @@ Grid::Grid(World * world)
 	{
 		float line_x = static_cast<float>(i * world_->cell_size());
 		sf::Vector2f top_end(line_x, 0);
-		sf::Vector2f bottom_end(line_x, static_cast<float>(world_->window_size().y));
+		sf::Vector2f bottom_end(line_x, static_cast<float>(world_->window_size_snake().y));
 
 		lines_[2 * i].position = top_end;
 		lines_[2 * i + 1].position = bottom_end;
@@ -25,7 +25,7 @@ Grid::Grid(World * world)
 	{
 		float line_y = static_cast<float>(i * world_->cell_size());
 		sf::Vector2f left_end(0, line_y);
-		sf::Vector2f right_end(static_cast<float>(world_->window_size().x), line_y);
+		sf::Vector2f right_end(static_cast<float>(world_->window_size_snake().x - world_->score_panel().x * world_->cell_size()), line_y);
 
 		lines_[2 * world_->world_size().x + 2 * i].position = left_end;
 		lines_[2 * world_->world_size().x + 2 * i + 1].position = right_end;

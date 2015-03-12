@@ -4,7 +4,7 @@
 int main()
 {
 	World world;
-	sf::RenderWindow window(sf::VideoMode(world.window_size().x, world.window_size().y), "SFML works!");//
+	sf::RenderWindow window(sf::VideoMode(world.window_size_snake().x, world.window_size_snake().y), "SFML works!");//
 	window.setKeyRepeatEnabled(false);//проверка на нажатие клавиш. Стд:установленно
 
 	while (window.isOpen())//пока окно открыто

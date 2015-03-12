@@ -1,5 +1,6 @@
 ﻿#include "Snake.h"
 #include "World.h"
+#include <iostream>
 
 Snake::Snake(World * world)
 	: speed_(1, 0)
@@ -8,6 +9,7 @@ Snake::Snake(World * world)
 	, world_(world)
 	, size_(5)
 	, alive_(true)
+	, score_(0)
 {
 	snake_.push_back(SnakeSegment(world, pos_));
 };
@@ -38,6 +40,7 @@ void Snake::update(float time)
 		if (world_->get_food()->get_pos() == pos_)
 		{
 			size_ += 3;
+			score_ += 1;
 			world_->get_food()->set_random_pos();
 		}
 		if (snake_.size() > size_)
@@ -74,4 +77,8 @@ void Snake::on_key_pressed(sf::Keyboard::Key code)
 		speed_ = sf::Vector2i(1, 0);
 	if (code == sf::Keyboard::Left)
 		speed_ = sf::Vector2i(-1, 0);
+}
+int Snake::get_score() const
+{
+	return score_;
 }
