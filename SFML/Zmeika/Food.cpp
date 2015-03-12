@@ -1,7 +1,6 @@
 #include "Food.h"
 #include "World.h"
 
-
 Food::Food(World * world) 
 	: world_(world)
 	, rect_(sf::Vector2f(world->cell_size(), world->cell_size()))

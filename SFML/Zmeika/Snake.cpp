@@ -66,7 +66,6 @@ void Snake::draw(sf::RenderWindow &window) const
 	}
 }
 
-
 void Snake::on_key_pressed(sf::Keyboard::Key code)
 {
 	if (code == sf::Keyboard::Up)
@@ -78,6 +77,7 @@ void Snake::on_key_pressed(sf::Keyboard::Key code)
 	if (code == sf::Keyboard::Left)
 		speed_ = sf::Vector2i(-1, 0);
 }
+
 int Snake::get_score() const
 {
 	return score_;

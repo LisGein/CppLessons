@@ -16,7 +16,6 @@ sf::Vector2i World::score_panel() const
 {
 	return score_panel_;
 }
-
 sf::Vector2i World::window_size_snake() const
 {
 	return world_size_ * static_cast<int>(ceil(cell_size_)) + score_panel_ * static_cast<int>(ceil(cell_size_));
@@ -29,23 +28,19 @@ sf::Vector2i World::world_size() const
 {
 	return world_size_;
 }
-
 float World::cell_size() const
 {
 	return cell_size_;
 }
-
 float World::time() const
 {
 	return clock_.getElapsedTime().asSeconds();
 }
-
 sf::Texture World::texture_food_()
 {
 	texture_food.loadFromFile("D:\\CppLessons\\SFML\\Zmeika\\Food.png");
 	return texture_food;
 }
-
 sf::Texture World::texture_end_()
 {
 	texture_end.loadFromFile("D:\\CppLessons\\SFML\\Zmeika\\game.jpg");
@@ -61,6 +56,16 @@ std::mt19937 & World::rnd_gen()
 	return gen_;
 }
 
+Food * World::get_food()
+{
+	return &food_;
+}
+
+Snake * World::get_snake()
+{
+	return &snake_;
+}
+
 void World::draw_all(sf::RenderWindow &window) const
 {
 	if (snake_.is_alive())
@@ -74,14 +79,6 @@ void World::draw_all(sf::RenderWindow &window) const
 		endgame_.draw(window);
 }
 
-Food * World::get_food()
-{
-	return &food_;
-}
-Snake * World::get_snake()
-{
-	return &snake_;
-}
 void World::update_all()
 {
 	 snake_.update(time());
