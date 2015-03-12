@@ -10,7 +10,7 @@ Food::Food(World * world)
 	std::uniform_int_distribution<> clr_dist(0, 255);
 	sf::Color food_color(clr_dist(world_->rnd_gen()), clr_dist(world_->rnd_gen()), clr_dist(world_->rnd_gen()));
 	color_ = food_color;
-	rect_.setFillColor(color_);
+	//rect_.setFillColor(color_);
 	
 	rect_.setTexture(&texture_);
 	set_random_pos();

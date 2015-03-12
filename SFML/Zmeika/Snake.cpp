@@ -23,7 +23,7 @@ Snake::SnakeSegment::SnakeSegment(World * world, sf::Vector2i pos)
 
 void Snake::update(float time)
 {
-	if (time - pres_step_ >= 0.2)
+	if (time - pres_step_ >= 0.15)
 	{
 		pos_ += speed_;
 		if (pos_.y > world_->world_size().y - 1)

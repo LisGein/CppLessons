@@ -38,22 +38,22 @@ float World::time() const
 }
 sf::Texture World::texture_food_()
 {
-	texture_food.loadFromFile("D:\\CppLessons\\SFML\\Zmeika\\Food.png");
+	texture_food.loadFromFile("Food.png");
 	return texture_food;
 }
 sf::Texture World::texture_fon_()
 {
-	texture_fon.loadFromFile("D:\\CppLessons\\SFML\\Zmeika\\fon.jpeg");
+	texture_fon.loadFromFile("fon.jpeg");
 	return texture_fon;
 }
 sf::Texture World::texture_end_()
 {
-	texture_end.loadFromFile("D:\\CppLessons\\SFML\\Zmeika\\game.jpg");
+	texture_end.loadFromFile("game.png");
 	return texture_end;
 }
 sf::Font World::font_()
 {
-	font.loadFromFile("D:\\CppLessons\\SFML\\Zmeika\\Font.ttf");
+	font.loadFromFile("Font.ttf");
 	return font;
 }
 std::mt19937 & World::rnd_gen()
