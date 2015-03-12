@@ -42,13 +42,10 @@ void Snake::update(float time)
 		}
 		if (snake_.size() > size_)
 			snake_.pop_front();
-		pos_head = snake_[snake_.size() - 1].rect_.getPosition();
 		for (int i = 0; i < snake_.size() - 1; i++)
 		{
-			pos_next = snake_[i].rect_.getPosition();
-			if (pos_head == pos_next)
+			if (snake_.back().pos_ == snake_[i].pos_)
 				alive_ = false;
-
 		}
 	}
 }

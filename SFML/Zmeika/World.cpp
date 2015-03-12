@@ -54,9 +54,9 @@ void World::draw_all(sf::RenderWindow &window) const
 	if (snake_.is_alive())
 	{
 		fon_.draw(window);
-		food_.draw(window);
 		grid_.draw(window);
 		snake_.draw(window);
+		food_.draw(window);
 	}
 	else
 		endgame_.draw(window);

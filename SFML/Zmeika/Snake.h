@@ -28,7 +28,5 @@ private:
 	sf::Vector2i speed_;
 	float pres_step_;
 	int size_;
-	sf::Vector2f pos_head;
-	sf::Vector2f pos_next;
 	bool alive_;
 };

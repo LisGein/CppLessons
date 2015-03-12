@@ -4,6 +4,7 @@
 
 EndGame::EndGame(World * world)
 	: world_(world)
+	, rect_(sf::Vector2f(world->window_size()))
 	, texture(world->texture_end_())
 {
 	rect_.setPosition(0, 0);

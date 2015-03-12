@@ -7,7 +7,7 @@ Grid::Grid(World * world)
 {
 	lines_.resize(2 * (world_->world_size().x + world_->world_size().y));
 
-	for (int i = 0; i < world_->world_size().x; i++)
+	for (int i = 0; i < world_->world_size().x; i ++)
 	{
 		float line_x = static_cast<float>(i * world_->cell_size());
 		sf::Vector2f top_end(line_x, 0);
@@ -17,7 +17,7 @@ Grid::Grid(World * world)
 		lines_[2 * i + 1].position = bottom_end;
 	}
 
-	for (int i = 0; i < world_->world_size().y; i++)
+	for (int i = 0; i < world_->world_size().y; i ++)
 	{
 		float line_y = static_cast<float>(i * world_->cell_size());
 		sf::Vector2f left_end(0, line_y);
