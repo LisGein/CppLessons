@@ -2,7 +2,6 @@
 #include <SFML\Graphics.hpp>
 #include <random>
 
-#include "Fon.h"
 #include "Grid.h"
 #include "Food.h"
 #include "Snake.h"
@@ -37,7 +36,6 @@ private:
 	std::random_device rd_;
 	std::mt19937 gen_;
 private:
-	Fon fon_;
 	Grid grid_;
 	Food food_;
 	Snake snake_;

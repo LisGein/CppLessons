@@ -85,7 +85,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EndGame.cpp" />
-    <ClCompile Include="Fon.cpp" />
     <ClCompile Include="Food.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -94,7 +93,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EndGame.h" />
-    <ClInclude Include="Fon.h" />
     <ClInclude Include="Food.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Snake.h" />

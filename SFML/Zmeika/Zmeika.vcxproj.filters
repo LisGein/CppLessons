@@ -30,9 +30,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Fon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EndGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,9 +45,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Snake.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Fon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EndGame.h">

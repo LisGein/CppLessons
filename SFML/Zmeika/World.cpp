@@ -4,7 +4,6 @@ World::World()
 	: world_size_(40, 30)
 	, cell_size_(20.f)
 	, gen_(rd_())
-	, fon_(this)
 	, grid_(this)
 	, food_(this)
 	, snake_(this)
@@ -53,7 +52,6 @@ void World::draw_all(sf::RenderWindow &window) const
 {
 	if (snake_.is_alive())
 	{
-		fon_.draw(window);
 		grid_.draw(window);
 		snake_.draw(window);
 		food_.draw(window);
