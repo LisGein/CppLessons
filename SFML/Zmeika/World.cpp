@@ -41,6 +41,11 @@ sf::Texture World::texture_food_()
 	texture_food.loadFromFile("D:\\CppLessons\\SFML\\Zmeika\\Food.png");
 	return texture_food;
 }
+sf::Texture World::texture_fon_()
+{
+	texture_fon.loadFromFile("D:\\CppLessons\\SFML\\Zmeika\\fon.jpeg");
+	return texture_fon;
+}
 sf::Texture World::texture_end_()
 {
 	texture_end.loadFromFile("D:\\CppLessons\\SFML\\Zmeika\\game.jpg");

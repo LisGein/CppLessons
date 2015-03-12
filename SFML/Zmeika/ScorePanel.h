@@ -11,6 +11,7 @@ public:
 	void draw(sf::RenderWindow &window) const;
 private:
 	World * world_;
+	sf::Texture texture;
 	sf::Text text_score;
 	sf::Font font_score;
 	sf::RectangleShape rect_;

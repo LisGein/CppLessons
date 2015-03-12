@@ -19,6 +19,7 @@ public:
 	float cell_size() const;
 	float time() const;
 	sf::Texture texture_food_();
+	sf::Texture texture_fon_();
 	sf::Texture texture_end_();
 	sf::Font font_();
 	std::mt19937 & rnd_gen();
@@ -36,6 +37,7 @@ private:
 	sf::Vector2i score_panel_;
 	float cell_size_;
 	sf::Texture texture_food;
+	sf::Texture texture_fon;
 	sf::Texture texture_end;
 	sf::Font font;
 private:
