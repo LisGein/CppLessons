@@ -18,8 +18,8 @@ Food::Food(World * world)
 
 void Food::set_random_pos()
 {
-	std::uniform_int_distribution<> x_coor(0, world_->world_size().x);
-	std::uniform_int_distribution<> y_coor(0, world_->world_size().y);
+	std::uniform_int_distribution<> x_coor(0, world_->world_size().x - 1);
+	std::uniform_int_distribution<> y_coor(0, world_->world_size().y - 1);
 	pos_ = sf::Vector2i(x_coor(world_->rnd_gen()), y_coor(world_->rnd_gen()));
 
 	rect_.setPosition(pos_.x * world_->cell_size() - 1, pos_.y * world_->cell_size() - 1);
