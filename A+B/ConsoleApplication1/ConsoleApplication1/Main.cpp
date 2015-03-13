@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <cctype>
+#include <math.h>
 
 int main()
 {
@@ -15,23 +16,26 @@ int main()
 	int num_f = 0;
 	int num_s = 0;
 	int summa = 0;
+	int sum = 0;
 	while (std::getline(in, line))
 	{
 		for (int i = 0; i < line.size(); ++i)
 		{
-			if (isdigit(line[i]))
-				if (second_num.size() <= 1)
+			if (isdigit(line[i]))	
+				if (sum <= 1)
 					if (((line[i]) >= '0') && ((line[i]) <= '9'))
 						first_num.push_back(line[i] - '0');
-					else break;
-					if (isspace(line[i]))
-						if (second_num.size() <= 0)
-							if (first_num.size() > 0)
-							{
-								for (int i = 0; i < first_num.size(); ++i)
-									second_num.push_back(first_num[i]);
-								first_num.clear();
-							}
+			if (isspace(line[i]))
+			{
+				if (second_num.size() == 0)
+					if (first_num.size() > 0)
+					{
+						for (int i = 0; i < first_num.size(); ++i)
+							second_num.push_back(first_num[i]);
+						first_num.clear();
+					}
+				sum++;
+			}
 		}
 	}
 	for (int i = 0; i < first_num.size(); ++i)
@@ -48,6 +52,5 @@ int main()
 	summa = num_f + num_s;
 	fout_ << summa;
 	fout_.close();
-	system("pause");
 	return 0;
 }

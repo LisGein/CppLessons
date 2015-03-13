@@ -30,27 +30,24 @@ int conv(int &numb, int degree_)
 }
 int main()
 {
-	int numbs;
-	int degree = -1;
+	int num_;
+	int degree = 0;
 	int otv = 0;
 	std::string input_num;
 	std::cout << "Enter number: " << std::endl;
 	std::getline(std::cin, input_num);
-	std::vector<int> o_nums;
-	for (int i = 0; i < input_num.size(); ++i)
+	for (int i = input_num.size() - 1; i >= 0; --i)
 	{
 		if (iput(input_num[i]) != 16)
-			o_nums.push_back(iput(input_num[i]));
+		{
+			num_ = (iput(input_num[i]));
+			otv += (conv(num_, degree));
+			degree++;
+		}
 		else
 			return 0;
 	}
-	degree += o_nums.size();
-	for (int i = 0; i < o_nums.size(); ++i)
-	{
-		otv += (conv(o_nums[i], degree));
-		degree--;
-	}
-	std::cout << otv;
+	std::cout << otv << std::endl;
 	system("pause");
 	return 0;
 }
