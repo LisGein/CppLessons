@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cipher", "Cipher\Cipher.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Numbers", "Numbers\Numbers.vcxproj", "{CCCB6B6D-BA5F-4B67-AEDD-8D0D6AC17594}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hashs", "Hashs\Hashs.vcxproj", "{FB4120B8-034B-4DE5-9402-1F7FCB306CE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +23,10 @@ Global
 		{CCCB6B6D-BA5F-4B67-AEDD-8D0D6AC17594}.Debug|Win32.Build.0 = Debug|Win32
 		{CCCB6B6D-BA5F-4B67-AEDD-8D0D6AC17594}.Release|Win32.ActiveCfg = Release|Win32
 		{CCCB6B6D-BA5F-4B67-AEDD-8D0D6AC17594}.Release|Win32.Build.0 = Release|Win32
+		{FB4120B8-034B-4DE5-9402-1F7FCB306CE6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FB4120B8-034B-4DE5-9402-1F7FCB306CE6}.Debug|Win32.Build.0 = Debug|Win32
+		{FB4120B8-034B-4DE5-9402-1F7FCB306CE6}.Release|Win32.ActiveCfg = Release|Win32
+		{FB4120B8-034B-4DE5-9402-1F7FCB306CE6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
