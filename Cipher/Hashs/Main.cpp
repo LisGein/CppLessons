@@ -4,68 +4,131 @@
 #include <vector>
 
 typedef std::pair<std::string, int> list_t;
+typedef std::vector<list_t> list_t_hash;
 
-int pos(std::string &word_, int &amount)
+int gener_idx(std::string &word_, int &amount)
 {
 	int degree = 1;
 	int code = 53;
 	int code_hash;
-	int test = 0;
+	int code_name = 0;
 	size_t idx;
 	for (int i = 0; i < word_.size(); ++i)
-		if (isalpha(word_[i]))
-		{
-			code_hash = ((int)tolower(word_[i])) * degree;
-			test += code_hash;
-			degree *= code;
-		}
-	idx = test % amount;
+	{
+		code_hash = word_[i] * degree;
+		code_name += code_hash;
+		degree *= code;
+	}
+	idx = code_name % amount;
 	return idx;
 }
 
+class HashTable
+
+{
+public:
+	HashTable()		
+	{
+		hash_table.resize(size_hash);
+	};
+	void add_objs(std::string &word, int &ages)
+	{
+		idx = gener_idx(word, size_hash); //forming id
+		for (int i = 0; i < hash_table[idx].size(); ++i)
+			if (hash_table[idx][i].first == word)
+			{
+				hash_table[idx][i].second = ages;
+				find_name = true;
+			}
+		if (find_name == false)
+		{
+			name_age = std::make_pair(word, ages); //forming name-age 
+			hash_table[idx].push_back(name_age);
+			added_el++;
+		}
+		find_name = false;
+
+
+	}
+	void input_hash()
+	{
+		for (int id = 0; id < hash_table.size(); ++id)
+			for (int i = 0; i < hash_table[id].size(); ++i)
+			{
+				std::cout << hash_table[id][i].first << " - " << hash_table[id][i].second;
+				std::cout << "\n";
+			}		
+	}
+	double kof()
+	{
+		kof_ = (double)added_el / size_hash;
+		return kof_;
+	}
+	void rehash()
+	{
+		resize_hash = size_hash * 2;
+		new_hash.resize(resize_hash);
+		for (int i = 0; i < hash_table.size(); ++i)
+			new_hash[i] = hash_table[i];
+		hash_table.clear();
+		size_hash = resize_hash;
+		hash_table.resize(size_hash);
+		for (int i = 0; i < hash_table.size(); ++i)
+			hash_table[i] = new_hash[i];		
+		new_hash.clear();
+	}
+	void find_name_hash(std::string &name_f)
+	{
+		for (int id = 0; id < hash_table.size(); ++id)
+		{
+			for (int i = 0; i < hash_table[id].size(); ++i)
+				if (name_f == hash_table[id][i].first)
+				{
+					std::cout << hash_table[id][i].first << " - " << hash_table[id][i].second << std::endl;
+					conv_name = true;
+				}
+		}
+		if (conv_name == false)
+		{
+			std::cout << "Not found" << std::endl;
+			conv_name = false;
+		}
+		
+	}
+private:
+	
+	int size_hash = 10;
+	int resize_hash;
+	bool find_name = false;
+	double kof_;
+	int added_el = 0;
+	bool conv_name = false;
+	size_t idx;
+	list_t name_age;
+	std::vector<std::vector <list_t>> hash_table;
+	std::vector<std::vector <list_t>> new_hash;
+};
+
 int main()
 {
+	HashTable hash_table;
 	std::fstream in("input.txt");
+	std::string name_f;
 	std::string word;
-	std::string word_;
-	int idx;
-	list_t name_age;
-	int amount = 0; 
-	int amount_;
 	int size_hash = 10;
-	int chn = 1;
-	std::vector <list_t> amadeus(size_hash);
-	while (in >> word)
+	int ages;	
+	while (in >> word >> ages)
 	{
-		if ((chn % 2) > 0)
-		{
-			idx = pos(word, size_hash);
-			word_ = word;
-			chn++;
-		}
-		else
-		{		
-			for (int i = 0; i < word.size(); ++i)
-			{
-				amount_ = pow(10, (word.size() - 1) - i);
-				amount += (word[i] - '0') * (amount_);
-			}
-			
-			if (amadeus[idx].first == word_)
-			{
-				amadeus[idx].second += amount;
-			}
-			else 
-			{
-				name_age = std::make_pair(word_, amount);
-				amadeus[idx] = name_age;
-			}			
-			amount = 0;
-			chn++;
-		}		
+		if (hash_table.kof() >= 1)
+			hash_table.rehash();
+		hash_table.add_objs(word, ages);
 	}
-	for (int i = 0; i < amadeus.size(); i++)
-		std::cout << amadeus[i].first << " - " << amadeus[i].second << std::endl;
-	system("pause");
+	hash_table.input_hash();
+	while (true)
+	{
+		std::cout << "Enter name: " << std::endl;
+		std::cin >> name_f;
+		hash_table.find_name_hash(name_f);
+	}
 	return 0;
 }
