@@ -66,7 +66,7 @@ public:
 	}
 	void rehash()
 	{
-		resize_hash = size_hash * 2;
+		resize_hash = size_hash * increase;
 		new_hash.resize(resize_hash);
 		for (int i = 0; i < hash_table.size(); ++i)
 			new_hash[i] = hash_table[i];
@@ -79,27 +79,43 @@ public:
 	}
 	void find_name_hash(std::string &name_f)
 	{
-		for (int id = 0; id < hash_table.size(); ++id)
+		conv_name = false;
+		find_size = size_hash;
+		if (find_size != first_size)
 		{
-			for (int i = 0; i < hash_table[id].size(); ++i)
-				if (name_f == hash_table[id][i].first)
+			do
+			{
+				idx = gener_idx(name_f, find_size);
+				for (int i = 0; i < hash_table[idx].size(); ++i)
+					if (hash_table[idx][i].first == name_f)
+					{
+						std::cout << hash_table[idx][i].first << " - " << hash_table[idx][i].second << std::endl;
+						conv_name = true;
+					}
+				find_size = find_size / increase;
+			} 
+			while (find_size != first_size);
+		}
+		else
+		{
+			idx = gener_idx(name_f, find_size);
+			for (int i = 0; i < hash_table[idx].size(); ++i)
+				if (hash_table[idx][i].first == name_f)
 				{
-					std::cout << hash_table[id][i].first << " - " << hash_table[id][i].second << std::endl;
+					std::cout << hash_table[idx][i].first << " - " << hash_table[idx][i].second << std::endl;
 					conv_name = true;
 				}
 		}
 		if (conv_name == false)
-		{
-			std::cout << "Not found" << std::endl;
-			conv_name = false;
-		}
-		
+			std::cout << "Not found!" << std::endl;	
 	}
 private:
-	
+	int first_size = 10;
+	int find_size;
 	int size_hash = 10;
+	int increase = 2;
 	int resize_hash;
-	bool find_name = false;
+	bool find_name;
 	double kof_;
 	int added_el = 0;
 	bool conv_name = false;
@@ -119,8 +135,8 @@ int main()
 	int ages;	
 	while (in >> word >> ages)
 	{
-		if (hash_table.kof() >= 1)
-			hash_table.rehash();
+		//if (hash_table.kof() >= 1)
+			//hash_table.rehash();
 		hash_table.add_objs(word, ages);
 	}
 	hash_table.input_hash();
