@@ -1,14 +1,20 @@
 #include <fstream>
+#include <math.h>
 
 int main()
 {
-	std::fstream in("INPUT.TXT");
+	std::ifstream in("INPUT.TXT");
 	int number;
+	int first_num;
+	int second_num;
 	int otv;
 	in >> number;
-	otv = (number / 10 + 1) * number / 10 * 100 + 25;
+	first_num = number / 10;
+	second_num = first_num + 1;
+	otv = (first_num * second_num * 100) + 25;
 	std::ofstream out_txt("OUTPUT.TXT");
 	out_txt << otv;
-	out_txt.close();	
+	out_txt.close();
+	
 	return 0;
 }

@@ -5,7 +5,7 @@
 
 int main()
 {
-	std::fstream in("input.txt");
+	std::ifstream in("input.txt");
 	int neighbors = 0;
 	int N, M, A, B;
 	char floor;

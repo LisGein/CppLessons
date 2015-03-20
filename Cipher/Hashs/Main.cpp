@@ -35,6 +35,7 @@ public:
 		double coefficient = (double)added_obj_ / size_hash_;
 		if (coefficient < 1)
 		{
+			list_t name_age;
 			size_t idx;
 			bool find_name = false;
 			idx = gener_idx(word, size_hash_); //forming id
@@ -46,8 +47,8 @@ public:
 				}
 			if (find_name == false)
 			{
-				name_age_ = std::make_pair(word, ages); //forming name-age 
-				hash_table_[idx].push_back(name_age_);
+				name_age = std::make_pair(word, ages); //forming name-age 
+				hash_table_[idx].push_back(name_age);
 				added_obj_++;
 			}
 			find_name = false;
@@ -74,14 +75,11 @@ public:
 				for (int i = 0; i < hash_table_[id].size(); ++i)
 				{
 					idx = gener_idx(hash_table_[id][i].first, resize_hash);
-					name_age_ = std::make_pair(hash_table_[id][i].first, hash_table_[id][i].second); //forming name-age 
-					new_hash[idx].push_back(name_age_);
+					list_t &name_age = hash_table_[id][i];
+					new_hash[idx].push_back(name_age);
 				}		
-		hash_table_.clear();
 		size_hash_ = resize_hash;
-		hash_table_.resize(size_hash_);
 		hash_table_ = new_hash;
-		new_hash.clear();
 	}
 	void find_hash(std::string &name_f)
 	{
@@ -100,7 +98,6 @@ public:
 private:
 	int size_hash_ = 10;
 	int added_obj_ = 0;
-	list_t name_age_;
 	std::vector<list_hash> hash_table_;
 };
 

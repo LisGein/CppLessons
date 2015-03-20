@@ -4,7 +4,7 @@
 
 int main()
 {
-	std::fstream in("INPUT.TXT");
+	std::ifstream in("INPUT.TXT");
 	int number;
 	int otv;
 	in >> number;
