@@ -8,12 +8,12 @@
 
 int main()
 {
+	std::set<std::string> comb_char;
 	std::ifstream in("input.txt");
 	std::string recombination;
 	std::string line;
 	std::string combination;
 	int amount_char = 0;
-	std::set<std::string> comb_char;
 	while (std::getline(in, line))
 	{
 		for (int i = 0; i < line.size(); ++i)
@@ -31,8 +31,8 @@ int main()
 			}
 			if ((!isalpha((unsigned char)line[i])) && (!isspace((unsigned char)line[i])))
 			{
-				ok_comb = false;
-				break;
+				combination.clear();
+				amount_char = 0;
 			}
 			if ((amount_char >= 3) && (combination.size() != 0))
 			{
