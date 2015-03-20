@@ -94,7 +94,6 @@ int main()
 			check_sumb += count[i];
 			check_sumb += count[i + 1];
 			check_sumb += count[i + 2];
-			std::cout << check_sumb << "\n";
 			auto search_3 = comb_char.find(check_sumb);
 			if (comb_char.find(check_sumb) != comb_char.end())
 				numb_find++;
