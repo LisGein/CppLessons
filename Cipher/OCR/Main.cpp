@@ -58,19 +58,18 @@ std::set<std::string> comb_set(std::string &line, int &shift)
 
 int main()
 {
-	std::set<std::string> comb_char;
+	std::set<std::string> lib;
 	std::ifstream in("input.txt");
 	std::string line;
 	int shift = 0;
 	while (std::getline(in, line))
 	{
-		comb_char = comb_set(line, shift);
+		lib = comb_set(line, shift);
 	}
 
 	std::map <int, int> errors;
 	int numb_find = 0;
 		
-	std::vector<char> count;
 	std::string words;
 	for (int shift = 0; shift < 26; ++shift)
 	{
@@ -81,14 +80,12 @@ int main()
 			comb_text = comb_set(words, shift);
 		}
 		std::set<std::string>::iterator i;
-		std::string test;
 		for (i = comb_text.begin(); i != comb_text.end(); ++i)		
-			if (comb_char.find(*i) != comb_char.end())
+			if (lib.find(*i) != lib.end())
 				numb_find++;
 
 		errors.insert(list_t(shift, numb_find));
-		numb_find = 0;
-		count.clear();		
+		numb_find = 0;	
 		check.close();
 	}
 	
