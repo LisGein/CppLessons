@@ -6,6 +6,16 @@
 #include <cctype>
 #include <string>
 
+char cipher(char &simb, int &shift)
+{
+	char alph;	
+		//if ((simb <= 'A')||(simb >= 'Z'))
+			simb = simb + 32;
+		alph = simb;
+		//+shift;
+	return alph;
+};
+
 int main()
 {
 	std::set<std::string> comb_char;
@@ -18,7 +28,6 @@ int main()
 	{
 		for (int i = 0; i < line.size(); ++i)
 		{
-			bool ok_comb = true;
 			if (std::isalpha((unsigned char)line[i]))
 			{
 				combination += (char)tolower(line[i]);
@@ -38,13 +47,7 @@ int main()
 			{
 				comb_char.insert(combination);
 				if (combination[combination.size() - 1] != ' ')
-				{
-					for (int i = 1; i < combination.size(); ++i)
-						recombination += combination[i];
-					combination.clear();
-					combination += recombination;
-					recombination.clear();
-				}
+					combination = combination.substr(1);
 				else 
 				{
 					amount_char = 1;
@@ -54,10 +57,23 @@ int main()
 			}
 		}
 	}
-	std::set<std::string>::iterator it;
- 	for (it = comb_char.begin(); it != comb_char.end(); ++it)
- 		std::cout <<  *it << "\n";
-	
+	std::ifstream check("check.txt");
+	std::string words;
+	int shift =  3 ;
+	std::vector<char> count;
+	while (std::getline(check, words))
+	{
+		for (int i = 0; i < words.size(); ++i)
+		{
+			if (std::isalpha((unsigned char)words[i]))	
+				count.push_back(cipher(words[i], shift));
+
+			if (std::isspace((unsigned char)words[i]))
+				count.push_back(' ');
+		}
+	}
+	for (int i = 0; i < count.size(); ++i)
+		std::cout << count[i];
 	system("pause");
 	return 0;
 }
