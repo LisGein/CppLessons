@@ -27,15 +27,16 @@ int main()
 {
 	std::string line;
 	std::vector<char> count;
-	std::fstream in("Cipher.txt");
+	std::ifstream in("Cipher.txt");
 	while (std::getline(in, line))
 	{
 		for (int i = 0; i < line.size(); ++i)
 			count.push_back(cipher_(line[i]));
 	}
+	std::ofstream ciper("cip.txt");
 	for (int i = 0; i < count.size(); ++i)
-		std::cout << count[i];
-
+		ciper << count[i];
+	ciper.close();
 	system("pause");
 	return 0;
 }

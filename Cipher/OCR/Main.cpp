@@ -5,14 +5,26 @@
 #include <vector>
 #include <cctype>
 #include <string>
+#include <utility>
+#include <map>
+
+typedef std::pair<int, int> list_t;
 
 char cipher(char &simb, int &shift)
 {
 	char alph;	
-		//if ((simb <= 'A')||(simb >= 'Z'))
-			simb = simb + 32;
-		alph = simb;
-		//+shift;
+	int change;
+	alph = (char)tolower(simb) + shift;
+	while (alph > 'z')
+	{
+		change =  alph - 'z';
+		alph = 'a' + change;
+	}
+	while (alph < 'a')
+	{
+		change = 'a' - alph;
+		alph = 'z' - change;
+	}
 	return alph;
 };
 
@@ -57,23 +69,45 @@ int main()
 			}
 		}
 	}
-	std::ifstream check("check.txt");
-	std::string words;
-	int shift =  3 ;
-	std::vector<char> count;
-	while (std::getline(check, words))
+	std::map <int, int> errors;
+	int numb_find = 0;
+	std::map<int, int>::iterator it_;
+	for (int shift = 0; shift < 55; ++shift)
 	{
-		for (int i = 0; i < words.size(); ++i)
+		std::ifstream check("check.txt");
+		std::vector<char> count;
+		std::string words;
+		while (std::getline(check, words))
 		{
-			if (std::isalpha((unsigned char)words[i]))	
-				count.push_back(cipher(words[i], shift));
+			for (int i = 0; i < words.size(); ++i)
+			{
+				if (std::isalpha((unsigned char)words[i]))
+					count.push_back(cipher(words[i], shift));
 
-			if (std::isspace((unsigned char)words[i]))
-				count.push_back(' ');
+				if (std::isspace((unsigned char)words[i]))
+					count.push_back(' ');
+			}
 		}
+		std::string check_sumb;
+		for (int i = 0; i < count.size() - 3; ++i)
+		{
+			check_sumb += count[i];
+			check_sumb += count[i + 1];
+			check_sumb += count[i + 2];
+			std::cout << check_sumb << "\n";
+			auto search_3 = comb_char.find(check_sumb);
+			if (comb_char.find(check_sumb) != comb_char.end())
+				numb_find++;
+			check_sumb = "";
+		}
+		errors.insert(list_t(shift, numb_find));
+		numb_find = 0;
+		count.clear();
+		check.close();
 	}
-	for (int i = 0; i < count.size(); ++i)
-		std::cout << count[i];
+	std::map<int, int>::iterator it;
+	for (it = errors.begin(); it != errors.end(); ++it)
+		std::cout << it->first << " => " << it->second << '\n';
 	system("pause");
 	return 0;
 }
