@@ -5,29 +5,25 @@
 #include <vector>
 #include <cctype>
 #include <string>
-#include <utility>
-#include <map>
 
 typedef std::pair<int, int> list_t;
+const int alphabet = 26;
 
 std::set<std::string> comb_set(std::string &line, int &shift)
 {
 	std::set<std::string> comb_char;
+	comb_char.clear();
 	std::string combination;
-	char com;
 	int amount_char = 0;
-	int alphabet = 26;
 	int circle;
-	int alp;
+	int alp_in_numb;
 	for (int i = 0; i < line.size(); ++i)
 	{
 		if (std::isalpha((unsigned char)line[i]))
 		{
-			alp = (char)tolower(line[i]) - 97;
-			circle = (alp + shift) / alphabet;
-			com = alp - (circle * alphabet);
-			com += 97;
-			combination += com;
+			alp_in_numb = (char)tolower(line[i]) - 97;
+			circle = (alp_in_numb + shift) / alphabet;
+			combination += alp_in_numb + shift - (circle*alphabet) + 97;
 			amount_char++;
 		}
 		if (std::isspace((unsigned char)line[i]))
@@ -56,6 +52,41 @@ std::set<std::string> comb_set(std::string &line, int &shift)
 	return comb_char;
 };
 
+int best_res(std::set<std::string> &lib, std::set<std::string> &comb_text)
+{	
+	int numb_find = 0;
+	std::set<std::string>::iterator i;
+	for (i = comb_text.begin(); i != comb_text.end(); ++i)
+		if (lib.find(*i) != lib.end())
+			numb_find++;	
+	return numb_find;
+};
+
+void reciphers(int &shift)
+{
+	std::ifstream check("check.txt");
+	std::string recipher;
+	std::string word;
+	int circle;
+	int alp_in_numb;
+	while (std::getline(check, word))
+	{
+		for (int i = 0; i <= word.size(); ++i)
+		{
+			if (std::isalpha((unsigned char)word[i]))
+			{
+				alp_in_numb = (char)tolower(word[i]) - 97;
+				circle = (alp_in_numb + shift) / alphabet;
+				recipher += (alp_in_numb + shift) - (circle*alphabet) + 97;
+			}
+
+			if (std::isspace((unsigned char)word[i]))
+				recipher += ' ';
+		}
+	}
+	std::cout << recipher << "\n";
+}
+
 int main()
 {
 	std::set<std::string> lib;
@@ -63,35 +94,24 @@ int main()
 	std::string line;
 	int shift = 0;
 	while (std::getline(in, line))
-	{
 		lib = comb_set(line, shift);
-	}
 
-	std::map <int, int> errors;
-	int numb_find = 0;
-		
+	std::vector<int> res;
 	std::string words;
-	for (int shift = 0; shift < 26; ++shift)
+	for (int shift = 0; shift < alphabet; ++shift)
 	{
 		std::ifstream check("check.txt");
 		std::set<std::string> comb_text;
 		while (std::getline(check, words))
-		{
 			comb_text = comb_set(words, shift);
-		}
-		std::set<std::string>::iterator i;
-		for (i = comb_text.begin(); i != comb_text.end(); ++i)		
-			if (lib.find(*i) != lib.end())
-				numb_find++;
-
-		errors.insert(list_t(shift, numb_find));
-		numb_find = 0;	
+		res.push_back(best_res(lib, comb_text));
 		check.close();
 	}
-	
-	std::map<int, int>::iterator it;
-	for (it = errors.begin(); it != errors.end(); ++it)
- 		std::cout << it->first << " - " << it->second << '\n';
+	shift = 0;
+	for (int i = 0; i < res.size(); ++i)
+		if (shift < res[i])
+			shift = i;
+	reciphers(shift);
 	system("pause");
 	return 0;
 }
