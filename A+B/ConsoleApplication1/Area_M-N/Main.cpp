@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <fstream>
 #include <vector>
 #include <math.h>
 #include <cctype>
@@ -9,9 +10,7 @@ typedef std::pair<float, float> list_f;
 
 std::vector<std::pair<float, float>> set_points(int &global_area, int min_x, int min_y, int max_x, int max_y)
 {
-	int num_rd = global_area;
-	if (global_area < 1000)
-		num_rd *= global_area;
+	int num_rd = 10000;
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::vector<std::pair<float, float>> points(num_rd);
@@ -27,8 +26,8 @@ std::vector<std::pair<float, float>> set_points(int &global_area, int min_x, int
 
 void area_calc(int &global_area, int &k, int &n)
 {
-	double area = global_area * k / n;
-	std::cout << area;
+	double area = global_area * (double)k / n;
+	std::cout << area << std::endl;
 };
 
 int intersect(std::pair<float, float> &X_coor, list_int &A_coor,list_int &B_coor, int &min, int &intersect_count)
@@ -58,14 +57,13 @@ int intersect(std::pair<float, float> &X_coor, list_int &A_coor,list_int &B_coor
 int main()
 {
 	int num_angles;
-	std::cout << "Enter the number of sides" << std::endl;
-	std::cin >> num_angles;
+	std::ifstream fin("input.txt");
+	fin >> num_angles;
 	std::vector<list_int> angles(num_angles);
-	std::cout << "Enter the coordinates" << std::endl;
 	for (int i = 0; i < num_angles; i++)
 	{
-		std::cin >> angles[i].first;
-		std::cin >> angles[i].second;
+		fin >> angles[i].first;
+		fin >> angles[i].second;
 	}
 	int min_x = angles[0].first;
 	int max_x = 0;
