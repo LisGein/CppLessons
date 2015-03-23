@@ -97,7 +97,7 @@ int main()
 		for (int shift = 0; shift < alphabet; ++shift)
 		{
 			std::set<std::string> comb_text;
-			comb_set(crypted_line, shift, comb_text);
+			comb_set(crypted_text, shift, comb_text);
 			res.push_back(best_res(lib, comb_text));
 		}
 	}

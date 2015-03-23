@@ -15,6 +15,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Polygon", "Polygon\Polygon.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Parket", "Parket\Parket.vcxproj", "{7230CDB4-6D39-4C50-A070-650C5F655C41}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Area", "Area\Area.vcxproj", "{913687C5-D1F7-4373-92D5-91C68A4CFECF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Area_M-N", "Area_M-N\Area_M-N.vcxproj", "{B4D407A9-1665-43C4-BFDB-1AFC67171895}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -45,6 +49,14 @@ Global
 		{7230CDB4-6D39-4C50-A070-650C5F655C41}.Debug|Win32.Build.0 = Debug|Win32
 		{7230CDB4-6D39-4C50-A070-650C5F655C41}.Release|Win32.ActiveCfg = Release|Win32
 		{7230CDB4-6D39-4C50-A070-650C5F655C41}.Release|Win32.Build.0 = Release|Win32
+		{913687C5-D1F7-4373-92D5-91C68A4CFECF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{913687C5-D1F7-4373-92D5-91C68A4CFECF}.Debug|Win32.Build.0 = Debug|Win32
+		{913687C5-D1F7-4373-92D5-91C68A4CFECF}.Release|Win32.ActiveCfg = Release|Win32
+		{913687C5-D1F7-4373-92D5-91C68A4CFECF}.Release|Win32.Build.0 = Release|Win32
+		{B4D407A9-1665-43C4-BFDB-1AFC67171895}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B4D407A9-1665-43C4-BFDB-1AFC67171895}.Debug|Win32.Build.0 = Debug|Win32
+		{B4D407A9-1665-43C4-BFDB-1AFC67171895}.Release|Win32.ActiveCfg = Release|Win32
+		{B4D407A9-1665-43C4-BFDB-1AFC67171895}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
