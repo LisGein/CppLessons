@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <math.h>
 #include <cctype>
@@ -9,14 +10,13 @@ int main()
 {
 	
 	int num_angles;
-	std::cout << "Enter the number of sides" << std::endl;
-	std::cin >> num_angles;
-	std::vector<list_t> angles(num_angles);
-	std::cout << "Enter the coordinates" << std::endl;
+	std::ifstream fin("input.txt");
+	fin >> num_angles;
+	std::vector< std::pair<int, int> > angles(num_angles);
 	for (int i = 0; i < num_angles; i++)
 	{
-		std::cin >> angles[i].first;
-		std::cin >> angles[i].second;
+		fin >> angles[i].first;
+		fin >> angles[i].second;
 	}
 	double area_polygon = 0;
 	for (int i = 0; i < num_angles; i++)
@@ -27,7 +27,7 @@ int main()
 		else
 			area_polygon += angles[i].first * angles[0].second - angles[i].second  * angles[0].first;
 	}
-	area_polygon /= 2;
+	area_polygon /= 2.;
 	std::cout << area_polygon;
 	system("pause");
 	return 0;

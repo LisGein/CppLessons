@@ -5,117 +5,107 @@
 #include <cctype>
 #include <Random>
 
-typedef std::pair<int, int> list_int;
-typedef std::pair<float, float> list_f;
-
-std::vector<std::pair<float, float>> set_points(int &global_area, int min_x, int min_y, int max_x, int max_y)
+struct point_t
 {
-	int num_rd = 10000;
+	point_t()
+		:x(0.), y(0.)
+	{}
+	point_t(double x, double y)
+		:x(x), y(y)
+	{}
+	double x;
+	double y;
+};
+
+std::vector<point_t> gen_rnd_points(double global_area, double min_x, double min_y, double max_x, double max_y)
+{
+	int num_rd = 100000;
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::vector<std::pair<float, float>> points(num_rd);
+	std::vector<point_t> points;
+	std::uniform_real_distribution<double> xcoor(min_x, max_x);
+	std::uniform_real_distribution<double> ycoor(min_y, max_y);
 	for (int i = 0; i < num_rd; ++i)
-	{
-		std::uniform_real_distribution<float> xcoor(min_x, max_x);
-		std::uniform_real_distribution<float> ycoor(min_y, max_y);
-		points[i].first = xcoor(gen);
-		points[i].second = ycoor(gen);
-	}
+		points.push_back(point_t(xcoor(gen), ycoor(gen)));
+	
 	return points;
 };
 
-void area_calc(int &global_area, int &k, int &n)
+double area_calc(double global_area, int k, int n)
 {
-	double area = global_area * (double)k / n;
-	std::cout << area << std::endl;
+	return global_area * k / n;
 };
 
-int intersect(std::pair<float, float> &X_coor, list_int &A_coor,list_int &B_coor, int &min, int &intersect_count)
+bool intersect(point_t &P, point_t &A, point_t &B)
 {
-	if (((A_coor.first < X_coor.first) && (B_coor.first >= X_coor.first)) || ((A_coor.first > X_coor.first) && B_coor.first <= X_coor.first))//если А справа, а В слева или
-		{
-			if ((A_coor.second <= X_coor.second) && (B_coor.second <= X_coor.second))//если прямая ниже точки
-				intersect_count++;
-			else if (((A_coor.second > X_coor.second) && (B_coor.second <= X_coor.second)) || ((A_coor.second < X_coor.second) && (B_coor.second >= X_coor.second)))//если А выше, а В ниже или В выше, а А ниже
-			{
-				double A = A_coor.second - B_coor.second;
-				double B = B_coor.first - A_coor.first;
-				double C = ((A_coor.first * B_coor.second) - (B_coor.first * A_coor.second));
-				double D = (X_coor.second - min);
-				double E = (X_coor.first * min) - (X_coor.first * X_coor.second);
-				double y = ((((A * E) / D) - C) / B);
-				if ((y <= A_coor.second) || (y <= B_coor.second))
-					if (y <= X_coor.second)
-						intersect_count++;
-			}
-		}
-	else if ((A_coor.first == X_coor.first) && (B_coor.first == X_coor.first))
-			intersect_count++;
-	return intersect_count;
+	if (A.x == P.x)
+		return A.y < P.y; //маловероятно, но все равно мы не хотим делить на ноль
+
+	if (A.x < P.x && B.x <= P.x || A.x > P.x && B.x >= P.x)
+		return false;
+
+	if (A.y > P.y && B.y > P.y)
+		return false;
+
+	double k = (A.y - B.y) / (A.x - B.x);
+	double b = (A.x * B.y - A.y * B.x) / (A.x - B.x);
+	
+	return P.y >= k * P.x  + b;
 };
 
 int main()
 {
-	int num_angles;
+	int num_vert;
 	std::ifstream fin("input.txt");
-	fin >> num_angles;
-	std::vector<list_int> angles(num_angles);
-	for (int i = 0; i < num_angles; i++)
-	{
-		fin >> angles[i].first;
-		fin >> angles[i].second;
-	}
-	int min_x = angles[0].first;
-	int max_x = 0;
-	int min_y = angles[0].second;
-	int max_y = 0;
-	for (int i = 0; i < angles.size(); i++)
-	{
-		if (angles[i].first < min_x)
-			min_x = angles[i].first;
-		if (angles[i].first > max_x)
-			max_x = angles[i].first;
-		if (angles[i].second < min_y)
-			min_y = angles[i].second;
-		if (angles[i].second > max_y)
-			max_y = angles[i].second;
-	}
-	min_x--;
-	max_x++;
-	min_y--;
-	max_y++;
+	fin >> num_vert;
+	std::vector<point_t> vertices(num_vert);
 
-	int global_area = (max_x - min_x)* (max_y - min_y);
-	std::vector<list_f> coor_points = set_points(global_area, min_x, min_y, max_x, max_y);
-	list_f X_coor;
-	list_int A_coor;
-	list_int B_coor;
-	int n = 0;
+	for (int i = 0; i < num_vert; i++)
+	{
+		fin >> vertices[i].x;
+		fin >> vertices[i].y;
+	}
+	double min_x = vertices[0].x;
+	double max_x = vertices[0].x;
+	double min_y = vertices[0].y;
+	double max_y = vertices[0].y;
+
+	for (size_t i = 0; i < vertices.size(); i++)
+	{
+		if (vertices[i].x < min_x)
+			min_x = vertices[i].x;
+		if (vertices[i].x > max_x)
+			max_x = vertices[i].x;
+		if (vertices[i].y < min_y)
+			min_y = vertices[i].y;
+		if (vertices[i].y > max_y)
+			max_y = vertices[i].y;
+	}
+
+	double global_area = (max_x - min_x) * (max_y - min_y);
+	std::vector<point_t> rnd_points = gen_rnd_points(global_area, min_x, min_y, max_x, max_y);
 	int k = 0;
 
-	for (int i = 0; i < coor_points.size(); ++i)
+	for (size_t i = 0; i < rnd_points.size(); ++i)
 	{
-		n++;
 		int intersect_count = 0;
-		X_coor = std::make_pair(coor_points[i].first, coor_points[i].second);
-		for (int coor = 0; coor < angles.size(); ++coor)
+		point_t X(rnd_points[i].x, rnd_points[i].y);
+		for (size_t coor = 0; coor < vertices.size(); ++coor)
 		{
-			A_coor = std::make_pair(angles[coor].first, angles[coor].second);
-			if (coor != angles.size() - 1)
-			{
-				B_coor = std::make_pair(angles[coor + 1].first, angles[coor + 1].second);
-				intersect(X_coor, A_coor, B_coor, min_y, intersect_count);
-			}
+			point_t A = point_t(vertices[coor].x, vertices[coor].y);
+			point_t B;
+			if (coor != vertices.size() - 1)
+				B = point_t(vertices[coor + 1].x, vertices[coor + 1].y);
 			else
-			{
-				B_coor = std::make_pair(angles[0].first, angles[0].second);
-				intersect(X_coor, A_coor, B_coor, min_y, intersect_count);
-			}
+				B = point_t(vertices[0].x, vertices[0].y);
+
+			if (intersect(X, A, B))
+				intersect_count++;
 		}
 		if (intersect_count % 2 != 0)
 			k++;
 	}
-	area_calc(global_area, k, n);
+	std::cout << area_calc(global_area, k, rnd_points.size()) << std::endl;
 	system("pause");
 	return 0;
 }
