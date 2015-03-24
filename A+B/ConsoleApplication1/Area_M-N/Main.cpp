@@ -4,6 +4,8 @@
 #include <math.h>
 #include <cctype>
 #include <Random>
+#include <algorithm>
+#include <tuple>
 
 struct point_t
 {
@@ -70,22 +72,22 @@ int main()
 		fin >> vertices[i].x;
 		fin >> vertices[i].y;
 	}
-	double min_x = vertices[0].x;
-	double max_x = vertices[0].x;
-	double min_y = vertices[0].y;
-	double max_y = vertices[0].y;
+	
+	auto minmax_idx_x = std::minmax_element(vertices.begin(), vertices.end(),
+		[](point_t const &a, point_t const &b)
+		{
+			return a.x < b.x; 
+		});
+	double min_x = minmax_idx_x.first->x;
+	double max_x = minmax_idx_x.second->x;
 
-	for (size_t i = 0; i < vertices.size(); i++)
-	{
-		if (vertices[i].x < min_x)
-			min_x = vertices[i].x;
-		if (vertices[i].x > max_x)
-			max_x = vertices[i].x;
-		if (vertices[i].y < min_y)
-			min_y = vertices[i].y;
-		if (vertices[i].y > max_y)
-			max_y = vertices[i].y;
-	}
+	auto minmax_idx_y = std::minmax_element(vertices.begin(), vertices.end(),
+		[](point_t const &a, point_t const &b)
+		{
+			return a.y < b.y;
+		});
+	double min_y = minmax_idx_y.first->y;
+	double max_y = minmax_idx_y.second->y;
 
 	size_t num_rd = 100000;
 	std::random_device rd;
