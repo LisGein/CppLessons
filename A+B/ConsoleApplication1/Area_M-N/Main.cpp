@@ -17,20 +17,6 @@ struct point_t
 	double y;
 };
 
-std::vector<point_t> gen_rnd_points(double global_area, double min_x, double min_y, double max_x, double max_y)
-{
-	int num_rd = 100000;
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::vector<point_t> points;
-	std::uniform_real_distribution<double> xcoor(min_x, max_x);
-	std::uniform_real_distribution<double> ycoor(min_y, max_y);
-	for (int i = 0; i < num_rd; ++i)
-		points.push_back(point_t(xcoor(gen), ycoor(gen)));
-	
-	return points;
-};
-
 double area_calc(double global_area, int k, int n)
 {
 	return global_area * k / n;
@@ -52,6 +38,25 @@ bool intersect(point_t &P, point_t &A, point_t &B)
 	
 	return P.y >= k * P.x  + b;
 };
+
+bool inside(std::vector<point_t> &vertices, point_t X)
+{
+	int intersect_count = 0;
+	for (size_t coor = 0; coor < vertices.size(); ++coor)
+	{
+		point_t A = point_t(vertices[coor].x, vertices[coor].y);
+		point_t B;
+		if (coor != vertices.size() - 1)
+			B = point_t(vertices[coor + 1].x, vertices[coor + 1].y);
+		else
+			B = point_t(vertices[0].x, vertices[0].y);
+
+		if (intersect(X, A, B))
+			intersect_count++;
+	}
+
+	return intersect_count % 2 != 0;
+}
 
 int main()
 {
@@ -82,30 +87,21 @@ int main()
 			max_y = vertices[i].y;
 	}
 
+	size_t num_rd = 100000;
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<double> xcoor(min_x, max_x);
+	std::uniform_real_distribution<double> ycoor(min_y, max_y);
 	double global_area = (max_x - min_x) * (max_y - min_y);
-	std::vector<point_t> rnd_points = gen_rnd_points(global_area, min_x, min_y, max_x, max_y);
 	int k = 0;
 
-	for (size_t i = 0; i < rnd_points.size(); ++i)
+	for (size_t i = 0; i < num_rd; ++i)
 	{
-		int intersect_count = 0;
-		point_t X(rnd_points[i].x, rnd_points[i].y);
-		for (size_t coor = 0; coor < vertices.size(); ++coor)
-		{
-			point_t A = point_t(vertices[coor].x, vertices[coor].y);
-			point_t B;
-			if (coor != vertices.size() - 1)
-				B = point_t(vertices[coor + 1].x, vertices[coor + 1].y);
-			else
-				B = point_t(vertices[0].x, vertices[0].y);
-
-			if (intersect(X, A, B))
-				intersect_count++;
-		}
-		if (intersect_count % 2 != 0)
+		point_t X(xcoor(gen), ycoor(gen));
+		if (inside(vertices, X))
 			k++;
 	}
-	std::cout << area_calc(global_area, k, rnd_points.size()) << std::endl;
+	std::cout << area_calc(global_area, k, num_rd) << std::endl;
 	system("pause");
 	return 0;
 }
