@@ -1,121 +1,64 @@
 ﻿#include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
+#include <set>
+#include <string>
+#include <utility>
 
-
-const int WINDOW_WIDTH = 640;
-const int WINDOW_HEIGHT = 480;
-sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML works!");
-
-
-class Ball
+struct point_t
 {
-public:
-	Ball(sf::Vector2f const &pos, sf::Vector2f const &speed, float size, sf::Color const &color)
-		:speed_(speed),
-		Shapes(size),
-		size_(size)
-		
-
-		
-	{
-		Shapes.setPosition(pos);
-		Shapes.move(speed_);
-		//Shapes.setRadius(size_);
-		Shapes.setFillColor(color);
-	};
-	
-	void update(float dt)
-	{
-		sf::Vector2f pos_ = Shapes.getPosition();
-		if (pos_.y >= WINDOW_HEIGHT - size_ * 2)
-		{
-			speed_ = sf::Vector2f(speed_.x, -speed_.y);//пол
-		}
-		if (pos_.x >= WINDOW_WIDTH - size_ * 2)
-		{
-			speed_ = sf::Vector2f(-speed_.x, speed_.y);//право
-		}
-
-		if (pos_.y <= 0) //потолок
-		{
-			speed_ = sf::Vector2f(speed_.x, -speed_.y);
-		}
-		if (pos_.x <= 0) //лево
-		{
-			speed_ = sf::Vector2f(-speed_.x, speed_.y);
-		}
-
-			pos_ += speed_ * dt;
-			Shapes.setPosition(pos_);
-		
-	}
-	void draw(sf::RenderWindow &window)
-	{
-		window.draw(Shapes);
-	}
-
-
-private:
-	sf::CircleShape Shapes;
-	sf::Vector2f speed_;
-	sf::Vector2f pos_;
-	float size_;
-	std::string color_;
-	
+	point_t()
+		:x(0.), y(0.)
+	{}
+	point_t(double x, double y)
+		:x(x), y(y)
+	{}
+	double x;
+	double y;
 };
 
-void init_all(std::vector<Ball> &Shapes)
-{
-	sf::Vector2f pos(0, 0);
-	sf::Vector2f speed (50, 50);
-	float size(20);
-	sf::Color color = sf::Color::Blue;
-	Shapes.push_back(Ball(pos,speed,size,color));
-	//pos = sf::Vector2f(640, 480);
-	//speed = sf::Vector2f(-50, -50);
-	//float size(25.f);
-	//sf::Color color = sf::Color::Green;
-	//Shapes.push_back(Ball(pos,speed,size,color));
-}
-void draw_all(std::vector<Ball> &Shapes)
-{
-	for (int i = 0; i < Shapes.size(); ++i)
-	{
-		Shapes[i].draw(window);
-	}
-
-}
-void update_all(float &last_up, std::vector<Ball> &Shapes, sf::Clock &clock)
-{
-	float times = clock.getElapsedTime().asSeconds();
-	float dt = static_cast<float>(times - last_up);
-	last_up = times;
-	for (int i = 0; i < Shapes.size(); ++i)
-	{
-		Shapes[i].update(dt);
-	}
-}
 int main()
 {
-	sf::Clock clock;
-	std::vector<Ball> Shapes;
-	init_all(Shapes);
-	float last_up = clock.getElapsedTime().asSeconds();
-	while (window.isOpen())
+	sf::Image code_hard;
+	if (!code_hard.loadFromFile("code.png"))
+		return -1;
+	int WINDOW_WIDTH = code_hard.getSize().x;
+	int WINDOW_HEIGHT = code_hard.getSize().y;
+
+	sf::Color color = code_hard.getPixel(0,0);
+	std::vector<point_t> block;
+	std::vector<point_t> max_el_block;
+	int area = WINDOW_HEIGHT * WINDOW_WIDTH;
+	for (int h = 0; h < WINDOW_HEIGHT; ++h)
 	{
-		sf::Event event;
-		while (window.pollEvent(event))
+		for (int w = 0; w < WINDOW_WIDTH; ++w)
 		{
-			if (event.type == sf::Event::Closed)
-				window.close();
+			point_t pos = point_t(w, h);
+			sf::Color color_pix = code_hard.getPixel(w, h);
+			if (color == color_pix)
+			{
+				block.push_back(pos);
+				color_pix = color;
+				if (max_el_block.size() != 0)
+				{
+
+					if (max_el_block[0].x < pos.x)
+					{
+						max_el_block.clear();
+						max_el_block.push_back(pos);
+					}
+					else if (max_el_block[0].x == pos.x)
+						max_el_block.push_back(pos);
+				}
+				else
+					max_el_block.push_back(pos);
+			}
 		}
-		
-		update_all(last_up, Shapes, clock);
-		window.clear();
-		draw_all(Shapes);
-		window.display();
 	}
-	
+	for (int i = 0; i < max_el_block.size(); ++i)
+	{
+		std::cout << max_el_block[i].x << " - " << max_el_block[i].y << "\n";
+	}
+	system("pause");
 	return 0;
 }
