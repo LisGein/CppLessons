@@ -5,16 +5,44 @@
 #include <string>
 #include <utility>
 
+
 struct point_t
 {
 	point_t()
-		:x(0.), y(0.)
+		:x(0), y(0)
 	{}
-	point_t(double x, double y)
+	point_t(int x, int y)
 		:x(x), y(y)
 	{}
-	double x;
-	double y;
+	bool operator< (point_t &other)
+	{
+		if (y < other.y)
+			return true;
+		if (y == other.y && x < other.x)
+			return true;
+		return false;
+	}
+	int x;
+	int y;
+};
+typedef std::map<point_t, std::vector<point_t>> blocks_graph_t;
+
+void DFS(point_t current, blocks_graph_t &blocks_graph)
+{
+	std::set<point_t> visited;
+	visited.insert(current);
+	std::cout << "we are in (" << current.x << ", " << current.y << ")" << std::endl;
+	std::vector<point_t> max_x;
+	for (point_t const & next : blocks_graph[current]) // Для каждого ребра
+	{
+		if (visited.find(next) == visited.end())
+		{
+			max_x.push_back(next);
+			DFS(next, blocks_graph); // Запускаемся из соседа
+		}
+	}
+	for (int i = 0; i < max_x.size(); ++i)
+	std::cout << max_x[i].x << " - " << max_x[i].y << "\n";
 };
 
 int main()
@@ -25,40 +53,22 @@ int main()
 	int WINDOW_WIDTH = code_hard.getSize().x;
 	int WINDOW_HEIGHT = code_hard.getSize().y;
 
+	point_t pos(0,0);//первая точка
 	sf::Color color = code_hard.getPixel(0,0);
-	std::vector<point_t> block;
-	std::vector<point_t> max_el_block;
-	int area = WINDOW_HEIGHT * WINDOW_WIDTH;
-	for (int h = 0; h < WINDOW_HEIGHT; ++h)
+	blocks_graph_t blocks_graph;//вершина и её ребра
+	for (int row = 0; row < WINDOW_WIDTH; ++row)
 	{
-		for (int w = 0; w < WINDOW_WIDTH; ++w)
+		for (int col = 0; col < WINDOW_HEIGHT - 1; ++col) //-1!!!!&!?!?!?!
 		{
-			point_t pos = point_t(w, h);
-			sf::Color color_pix = code_hard.getPixel(w, h);
-			if (color == color_pix)
+			if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))//если ячейки (row, col) и (row, col + 1) одного цвета
 			{
-				block.push_back(pos);
-				color_pix = color;
-				if (max_el_block.size() != 0)
-				{
-
-					if (max_el_block[0].x < pos.x)
-					{
-						max_el_block.clear();
-						max_el_block.push_back(pos);
-					}
-					else if (max_el_block[0].x == pos.x)
-						max_el_block.push_back(pos);
-				}
-				else
-					max_el_block.push_back(pos);
+				blocks_graph[point_t(row, col)].push_back(point_t(row, col));
+				blocks_graph[point_t(row, col + 1)].push_back(point_t(row, col + 1));
 			}
 		}
 	}
-	for (int i = 0; i < max_el_block.size(); ++i)
-	{
-		std::cout << max_el_block[i].x << " - " << max_el_block[i].y << "\n";
-	}
+	DFS(pos, blocks_graph);
+
 	system("pause");
 	return 0;
 }
