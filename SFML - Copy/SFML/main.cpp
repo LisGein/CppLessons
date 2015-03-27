@@ -42,21 +42,21 @@ void DFS(point_t current, blocks_graph_t &blocks_graph, std::set<point_t> &visit
 			}
 			else if (max_x[0].x == next.x)
 			{
-				int find_max = next.y;
+				bool find_max = false;
 				for (int i_y = 0; i_y < max_x.size(); ++i_y)
 				{
-					if (max_x[i_y].y < find_max)
-						find_max = max_x[i_y].y;;
+					if (max_x[i_y].y < next.y)
+						find_max = true;
+					if (max_x[i_y].y > next.y)
+						find_max = false;
 				}
-				if (find_max != next.y)
-				max_x.push_back(next);
+				if (find_max == true)
+					max_x.push_back(next);
+				find_max = false;
 			}
 			DFS(next, blocks_graph, visited, max_x); // Запускаемся из соседа
 		}
 	}
-
-	for (int i = 0; i < max_x.size(); ++i)
-	std::cout << max_x[i].x << " - " << max_x[i].y << "\n";
 };
 
 int main()
@@ -114,7 +114,9 @@ int main()
 	std::vector<point_t> max_x;
 	max_x.push_back(pos);
 	DFS(pos, blocks_graph, visited, max_x);
-
+	std::cout << max_x.size() << "\n";
+	for (int i = 0; i < max_x.size(); ++i)
+		std::cout << max_x[i].x << " - " << max_x[i].y << "\n";
 	system("pause");
 	return 0;
 }
