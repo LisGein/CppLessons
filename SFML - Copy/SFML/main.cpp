@@ -80,47 +80,155 @@ void DFS(point_t current, blocks_graph_t &blocks_graph, std::set<point_t> &visit
 	}
 };
 
-void blocks(sf::Image &code_hard, sf::Color &color, blocks_graph_t  &blocks_graph)
+void blocks(sf::Image &code_hard, blocks_graph_t  &blocks_graph, point_t &pos, point_t &dc, std::string &cc)
 {
 	int width_img = code_hard.getSize().x;
 	int height_img = code_hard.getSize().y;
-	for (int col = 0; col < height_img; ++col)
+	if (((dc.x == 1) && (cc == "right")) || ((dc.y == 1) && (cc == "left")) || ((dc.x == -1) && (cc == "left")) || ((dc.y == 1) && (cc == "right")))
 	{
-		if (col != height_img - 1)
+		for (int col = pos.y; col < height_img; ++col)
 		{
-			for (int row = 0; row < width_img - 1; ++row)
+			if (col != height_img - 1)
 			{
-
-				if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))//если ячейки (row, col) и (row + 1, col) одного цвета
+				if (((dc.x == 1) && (cc == "right")) || ((dc.y == 1) && (cc == "left")))
 				{
-					blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
-					blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
-					if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
-						blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+					for (int row = pos.x; row < width_img - 1; ++row)
+					{
 
+						if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))//если ячейки (row, col) и (row + 1, col) одного цвета
+						{
+							blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
+							if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+								blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+
+						}
+						else if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+						{
+							blocks_graph[point_t(row, col + 1)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+						}
+					}
 				}
-				else if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+				else if (((dc.x == -1) && (cc == "left")) || ((dc.y == 1) && (cc == "right")))
 				{
-					blocks_graph[point_t(row, col + 1)].push_back(point_t(row, col));
-					blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+					for (int row = pos.x; row > 1; --row)
+					{
+
+						if (code_hard.getPixel(row, col) == code_hard.getPixel(row--, col))//если ячейки (row, col) и (row + 1, col) одного цвета
+						{
+							blocks_graph[point_t(row--, col)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row--, col));
+							if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+								blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+
+						}
+						else if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+						{
+							blocks_graph[point_t(row, col + 1)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+						}
+					}
+				}
+			}
+			else
+			{
+				if (((dc.x == 1) && (cc == "right")) || ((dc.y == 1) && (cc == "left")))
+				{
+					for (int row = pos.x; row < width_img - 1; ++row)
+						if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))
+						{
+							blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
+						}
+				}
+				else if (((dc.x == -1) && (cc == "left")) || ((dc.y == 1) && (cc == "right")))
+				{
+					for (int row = pos.x; row > 1; --row)
+						if (code_hard.getPixel(row, col) == code_hard.getPixel(row--, col))
+						{
+							blocks_graph[point_t(row--, col)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row--, col));
+						}
 				}
 			}
 		}
-		else
+	}
+
+	if (((dc.x == 1) && (cc == "left")) || ((dc.y == -1) && (cc == "right")) || ((dc.x == -1) && (cc == "right")) || ((dc.y == -1) && (cc == "left")))
+	{
+		for (int col = pos.y; col < height_img; ++col)
 		{
-			for (int row = 0; row < width_img - 1; ++row)
-				if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))
+			if (col != height_img - 1)
+			{
+				if (((dc.x == 1) && (cc == "left")) || ((dc.y == -1) && (cc == "right")))
 				{
-					blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
-					blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
+					for (int row = pos.x; row < width_img - 1; ++row)
+					{
+
+						if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))//если ячейки (row, col) и (row + 1, col) одного цвета
+						{
+							blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
+							if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+								blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+
+						}
+						else if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+						{
+							blocks_graph[point_t(row, col + 1)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+						}
+					}
 				}
+				else if (((dc.x == -1) && (cc == "right")) || ((dc.y == -1) && (cc == "left")))
+				{
+					for (int row = pos.x; row > 1; --row)
+					{
+
+						if (code_hard.getPixel(row, col) == code_hard.getPixel(row--, col))//если ячейки (row, col) и (row + 1, col) одного цвета
+						{
+							blocks_graph[point_t(row--, col)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row--, col));
+							if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+								blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+
+						}
+						else if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+						{
+							blocks_graph[point_t(row, col + 1)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+						}
+					}
+				}
+			}
+			else
+			{
+				if (((dc.x == 1) && (cc == "left")) || ((dc.y == -1) && (cc == "right")))
+				{
+					for (int row = pos.x; row < width_img - 1; ++row)
+						if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))
+						{
+							blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
+						}
+				}
+				else if (((dc.x == -1) && (cc == "right")) || ((dc.y == -1) && (cc == "left")))
+				{
+					for (int row = pos.x; row > 1; --row)
+						if (code_hard.getPixel(row, col) == code_hard.getPixel(row--, col))
+						{
+							blocks_graph[point_t(row--, col)].push_back(point_t(row, col));
+							blocks_graph[point_t(row, col)].push_back(point_t(row--, col));
+						}
+				}
+			}
 		}
 	}
 };
 
-void final_point(std::vector<point_t> &max_x, std::string &cc, point_t &dc, point_t &find_point)
+void final_point(sf::Image &code_hard, std::vector<point_t> &max_x, std::string &cc, point_t &dc, point_t &find_point, point_t &pos)
 {
-	
 	if (((dc.x == 1)&&(cc == "right"))||((dc.x == -1)&&(cc == "left")))
 	{
 		for (int i = 0; i < max_x.size(); ++i)
@@ -153,6 +261,28 @@ void final_point(std::vector<point_t> &max_x, std::string &cc, point_t &dc, poin
 				find_point = max_x[i];
 		}
 	}
+	int width_img = code_hard.getSize().x;
+	int height_img = code_hard.getSize().y;
+	if ((find_point.x + dc.x <= width_img) && (find_point.y + dc.y <= height_img))
+	{
+		point_t next(find_point.x + dc.x, find_point.y + dc.y);
+		sf::Color color_next = code_hard.getPixel(next.x, next.y);
+		if ((color_next.r == 255) && (color_next.g == 255) && (color_next.b == 255))//если белый, то нужен другой максимум
+		{
+			std::vector<point_t> next_max;
+			for (int i = 0; i < max_x.size(); ++i)
+				if ((find_point.x != max_x[i].x) && (find_point.y != max_x[i].y))
+					next_max.push_back(max_x[i]);
+
+			max_x.clear();
+			max_x = next_max;
+			final_point(code_hard, max_x, cc, dc, find_point, pos);
+		}
+		//else if ((color_next.r == 0) && (color_next.g == 0) && (color_next.b == 0))//если чёрный, то конец программы
+		else
+			pos = next;
+	}
+	
 };
 
 int main()
@@ -168,14 +298,25 @@ int main()
 	sf::Color color = code_hard.getPixel(0,0);
 	blocks_graph_t blocks_graph;
 
-	blocks(code_hard, color, blocks_graph);//вершина и её ребра
+	blocks(code_hard, blocks_graph, pos, dc, cc);//вершина и её ребра
 	
 	std::set<point_t> visited;
 	std::vector<point_t> max_x;
 	max_x.push_back(pos);
 	DFS(pos, blocks_graph, visited, max_x, dc);
-	final_point(max_x, cc, dc , find_point);
-
+	final_point(code_hard, max_x, cc, dc, find_point, pos);
+	while (true)
+	{
+		int size_prev = max_x.size();
+		sf::Color color_prev = color;
+		max_x.clear();
+		visited.clear();
+		 color = code_hard.getPixel(pos.x, pos.y);
+		blocks(code_hard, blocks_graph, pos, dc, cc);
+		max_x.push_back(pos);
+		DFS(pos, blocks_graph, visited, max_x, dc);
+		final_point(code_hard, max_x, cc, dc, find_point, pos);
+	}
 	std::cout << find_point.x << " - " << find_point.y << "\n";
 
 	system("pause");
