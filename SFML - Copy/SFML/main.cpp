@@ -6,6 +6,7 @@
 #include <utility>
 #include <iterator>
 #include <deque>
+#include <cctype>
 
 struct point_t
 {
@@ -160,9 +161,6 @@ int set_color_tab(sf::Color &color)
 
 void final_point(sf::Image &code_hard, std::vector<point_t> &max_x, point_t &dir, point_t &dp, point_t &pos, bool &end_pogram)
 {
-	sf::Color color = code_hard.getPixel(pos.x, pos.y);
-	int cipher_color = set_color_tab(color);
-
 	auto find_point = std::max_element(max_x.begin(), max_x.end(),
 		[dir](point_t const &a, point_t const &b)
 		{
@@ -188,12 +186,7 @@ void final_point(sf::Image &code_hard, std::vector<point_t> &max_x, point_t &dir
 		else if ((color_next.r == 0) && (color_next.g == 0) && (color_next.b == 0))//если чёрный, то конец программы
 			end_pogram = true;
 		else
-		{
-			int cipher_color_next = set_color_tab(color_next);
-
-
 			pos = next;
-		}
 	}
 	std::cout << find_point->x << " - " << find_point->y << "\n";
 };
@@ -228,7 +221,7 @@ void forming_dir(point_t &dp, std::string &cc, point_t &dir)
 	}
 };
 
-void actions(int &prev_color, int &col_tab, std::deque<int> stack_prog, blocks_graph_t  &blocks_graph, point_t &dp)
+void actions(int &prev_color, int &col_tab, std::deque<int> stack_prog,  std::set<point_t> &visited, point_t &dp, std::string &cc)
 {
 	int intermediate;
 	intermediate = prev_color - col_tab;
@@ -239,101 +232,184 @@ void actions(int &prev_color, int &col_tab, std::deque<int> stack_prog, blocks_g
 	{
 		if (change_br == 1)//push
 		{
-			stack_prog.push_back(blocks_graph.size());
+			if (visited.size() != 0)
+				stack_prog.push_back(visited.size());
 		}
 		else if (change_br == 2)//pop
 		{
-			stack_prog.pop_back();
+			if (stack_prog.size() != 0)
+				stack_prog.pop_back();
 		}
 	}
 	else if (change_tone == 1)
 	{
-		if (change_br == 0)
+		if (change_br == 0)//add
 		{
-			//add
+			
 		}
-		else if (change_br == 1)
+		else if (change_br == 1)//subtract - извлекает из стека два верхних элемента, выполняет соответствующую операцию и добавляет результат в стек.
+								//Первым операндом является элемент, который был глубже в стеке
 		{
-			//substract
+			if (stack_prog.size() > 1)
+			{
+				int mod_stack = (stack_prog[stack_prog.size() - 2] - stack_prog[stack_prog.size() - 1]);
+				stack_prog.pop_back();
+				stack_prog.pop_back();
+				stack_prog.push_back(mod_stack);
+			}
 		}
-		else if (change_br == 2)
+		else if (change_br == 2)//multiply - извлекает из стека два верхних элемента, выполняет соответствующую операцию и добавляет результат в стек.
+								//Первым операндом является элемент, который был глубже в стеке
 		{
-			//multiply
+			if (stack_prog.size() > 1)
+			{
+				int mod_stack = (stack_prog[stack_prog.size() - 2] * stack_prog[stack_prog.size() - 1]);
+				stack_prog.pop_back();
+				stack_prog.pop_back();
+				stack_prog.push_back(mod_stack);
+			}			
 		}
 	}
 	else if (change_tone == 2)
 	{
-		if (change_br == 0)
+		if (change_br == 0) //divide - извлекает из стека два верхних элемента, выполняет соответствующую операцию и добавляет результат в стек.
+							//Первым операндом является элемент, который был глубже в стеке
 		{
-			//divide
+			if (stack_prog.size() > 1)
+			{
+				int mod_stack = (stack_prog[stack_prog.size() - 2] / stack_prog[stack_prog.size() - 1]);
+				stack_prog.pop_back();
+				stack_prog.pop_back();
+				stack_prog.push_back(mod_stack);
+			}
 		}
-		else if (change_br == 1)
+		else if (change_br == 1)//mod - извлекает из стека два верхних элемента, выполняет соответствующую операцию и добавляет результат в стек.
+								//Первым операндом является элемент, который был глубже в стеке
 		{
-			//mod
+			if (stack_prog.size() > 1)
+			{
+				int mod_stack = (stack_prog[stack_prog.size() - 2] % stack_prog[stack_prog.size() - 1]);
+				stack_prog.pop_back();
+				stack_prog.pop_back();
+				stack_prog.push_back(mod_stack);
+			}
 		}
-		else if (change_br == 2)//not
+		else if (change_br == 2)//not - заменяет верхний элемент стека на 0, если он был не нулевым, и на 1 в противном случае.
 		{
-			if (stack_prog[0] == 0)
-				stack_prog[0] = 1;
-			else
-				stack_prog[0] = 0;
+			if (stack_prog.size() != 0)
+			{
+				if (stack_prog[stack_prog.size() - 1] == 0)
+					stack_prog[stack_prog.size() - 1] = 1;
+				else
+					stack_prog[stack_prog.size() - 1] = 0;
+			}
 		}
 	}
 	else if (change_tone == 3)
 	{
-		if (change_br == 0)	//greater
+		if (change_br == 0)	//greater - извлекает из стека два верхних элемента и добавляет в него 1, если более глубокое значение больше,
+							//и 0 в противном случае.
 		{
-			if (stack_prog[stack_prog.size() - 1] > stack_prog[stack_prog.size()])
+			if (stack_prog.size() > 1)
 			{
-				stack_prog.pop_back();
-				stack_prog.pop_back();
-				stack_prog.push_back(1);
-			}
-			else
-			{
-				stack_prog.pop_back();
-				stack_prog.pop_back();
-				stack_prog.push_back(0);
+				if (stack_prog[stack_prog.size() - 2] > stack_prog[stack_prog.size()] - 1)
+				{
+					stack_prog.pop_back();
+					stack_prog.pop_back();
+					stack_prog.push_back(1);
+				}
+				else
+				{
+					stack_prog.pop_back();
+					stack_prog.pop_back();
+					stack_prog.push_back(0);
+				}
 			}
 		}
-		else if (change_br == 1)
+		else if (change_br == 1)//pointer - извлекает из стека элемент и поворачивает DP на (90*значение) градусов по часовой стрелке
+								//(для отрицательных значений - против часовой).
 		{
-			//pointer
+			if (stack_prog.size() != 0)
+			{
+				point_t dir;
+				std::string direction;
+				if ((stack_prog[stack_prog.size()] - 1) < 0)
+					direction = "left";
+				else
+					direction = "right";
+				forming_dir(dp, direction, dir);
+				dp = dir;
+			}
 		}
-		else if (change_br == 2)
+		else if (change_br == 2)//switch - извлекает из стека элемент и меняет направление CC на противоположное, если элемент нечетный.
 		{
-			//switch
+			if (stack_prog.size() != 0)
+			{
+				int modulo = (stack_prog[stack_prog.size() - 1] % 2);
+				if (modulo != 0)
+				{
+					if (cc == "left")
+						cc = "right";
+					else
+						cc = "left";
+				}
+				stack_prog.pop_back();
+			}
 		}
 	}
 	else if (change_tone == 4)
 	{
 		if (change_br == 0)//duplicate: добавляет в стек копию его верхнего элемента.
 		{
-			int duplicated = stack_prog[stack_prog.size()];
-			stack_prog.push_back(duplicated);
+			if (stack_prog.size() != 0)
+			{
+				int duplicated = stack_prog[stack_prog.size() - 1];
+				stack_prog.push_back(duplicated);
+			}
 		}
 		else if (change_br == 1)
+			/*roll извлекает из стека верхнее значение M и следующее за ним N и выполняет M операций roll на глубину N каждая.
+			Одна операция roll на глубину N определяется как перемещение верхнего элемента стека на N элементов в глубину стека и перемещение
+			всех элементов выше N на 1 вверх. Глубина N не может быть отрицательной, тогда как количество операций M может быть (тогда roll 
+			выполняется в обратном направлении).*/
 		{
-			//roll
+			
 		}
-		else if (change_br == 2)
+		else if (change_br == 2)//in(int)
 		{
-			//in(int)
+			int input_num;
+			std::cin >> input_num;
+			stack_prog.push_back(input_num);
 		}
 	}
 	else if (change_tone == 5)
 	{
 		if (change_br == 0)
 		{
-			//in(char)
+			char word;
+			std::cin >> word;
+			if (std::isalpha((unsigned char)word))
+			{
+				int alp_in_numb = (char)tolower(word) - 'a';
+				stack_prog.push_back(alp_in_numb);
+			}			
 		}
-		else if (change_br == 1)
+		else if (change_br == 1)//out(int) - извлекает элемент из стека и выводит его на печать как число или символ в зависимости от типа команды.
 		{
-			//out(int)
+			if (stack_prog.size() != 0)
+			{
+				std::cout << stack_prog[stack_prog.size() - 1] << std::endl;
+				stack_prog.pop_back();
+			}
 		}
-		else if (change_br == 2)
+		else if (change_br == 2)//out(char) - извлекает элемент из стека и выводит его на печать как число или символ в зависимости от типа команды.
 		{
-			//out(char)
+			if (stack_prog.size() != 0)
+			{
+				char alp_in_numb = stack_prog[stack_prog.size() - 1] + 'a';
+				std::cout << alp_in_numb << std::endl;
+				stack_prog.pop_back();
+			}
 		}
 	}	
 }
@@ -351,26 +427,37 @@ int main()
 	std::string cc = "right";
 	blocks_graph_t blocks_graph;
 	point_t dir(0, 0);
+	std::deque<int> stack_prog;
 	forming_dir(dp, cc, dir);
 	blocks(code_hard, blocks_graph);//вершина и её ребра
 	
-	std::deque<int> stack_prog;
 	std::set<point_t> visited;
 	std::vector<point_t> max_x;
 	max_x.push_back(pos);
+
+	sf::Color color = code_hard.getPixel(pos.x, pos.y);
+	int cipher_color = set_color_tab(color);
 	DFS(pos, blocks_graph, visited, max_x, dp);
 	final_point(code_hard, max_x, dir, dp, pos, end_pogram);
+	sf::Color color_next = code_hard.getPixel(pos.x, pos.y);
+	int cipher_color_next = set_color_tab(color_next);
+	actions(cipher_color, cipher_color_next, stack_prog, visited, dp, cc);
+	visited.clear();
+	max_x.clear();
 	while (end_pogram == false)
 	{
-		int size_prev = max_x.size();
-		max_x.clear();
-		visited.clear();
 		max_x.push_back(pos);
+
+		sf::Color color = code_hard.getPixel(pos.x, pos.y);
+		int cipher_color = set_color_tab(color);
 		DFS(pos, blocks_graph, visited, max_x, dp);
 		final_point(code_hard, max_x, dir, dp, pos, end_pogram);
+		sf::Color color_next = code_hard.getPixel(pos.x, pos.y);
+		int cipher_color_next = set_color_tab(color_next);
+		actions(cipher_color, cipher_color_next, stack_prog, visited, dp, cc);
+		visited.clear();
+		max_x.clear();
 	}
-	std::cout << find_point.x << " - " << find_point.y << "\n";
-
 	system("pause");
 	return 0;
 }
