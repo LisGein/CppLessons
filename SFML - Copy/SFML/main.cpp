@@ -90,31 +90,38 @@ void blocks(sf::Image code_hard, blocks_graph_t  &blocks_graph)//построе�
 {
 	int width_img = code_hard.getSize().x;
 	int height_img = code_hard.getSize().y;
+
 	for (int col = 0; col < height_img; ++col)
 	{
 		if (col != height_img - 1)
 		{
 			for (int row = 0; row < width_img - 1; ++row)
 			{
-				if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))//если ячейки (row, col) и (row + 1, col) одного цвета
+				if (code_hard.getPixel(row, col) != sf::Color(255, 255, 255))
 				{
-					blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
-					blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
-				}
-				if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
-				{
-					blocks_graph[point_t(row, col + 1)].push_back(point_t(row, col));
-					blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+					if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))//если ячейки (row, col) и (row + 1, col) одного цвета
+					{
+						blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
+						blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
+					}
+					if (code_hard.getPixel(row, col) == code_hard.getPixel(row, col + 1))
+					{
+						blocks_graph[point_t(row, col + 1)].push_back(point_t(row, col));
+						blocks_graph[point_t(row, col)].push_back(point_t(row, col + 1));
+					}
 				}
 			}
 		}
 		else
 		{
 			for (int row = 0; row < width_img - 1; ++row)
-				if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))
+				if (code_hard.getPixel(row, col) != sf::Color(255, 255, 255))
 				{
-					blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
-					blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
+					if (code_hard.getPixel(row, col) == code_hard.getPixel(row + 1, col))
+					{
+						blocks_graph[point_t(row + 1, col)].push_back(point_t(row, col));
+						blocks_graph[point_t(row, col)].push_back(point_t(row + 1, col));
+					}
 				}
 		}
 	}
@@ -428,7 +435,6 @@ int main()
 	blocks_graph_t blocks_graph;
 	point_t dir(0, 0);
 	std::deque<int> stack_prog;
-	forming_dir(dp, cc, dir);
 	blocks(code_hard, blocks_graph);//вершина и её ребра
 	
 	std::set<point_t> visited;
@@ -436,25 +442,33 @@ int main()
 	max_x.push_back(pos);
 
 	sf::Color color = code_hard.getPixel(pos.x, pos.y);
-	int cipher_color = set_color_tab(color);
 	DFS(pos, blocks_graph, visited, max_x, dp);
+	forming_dir(dp, cc, dir);
 	final_point(code_hard, max_x, dir, dp, pos, end_pogram);
-	sf::Color color_next = code_hard.getPixel(pos.x, pos.y);
-	int cipher_color_next = set_color_tab(color_next);
-	actions(cipher_color, cipher_color_next, stack_prog, visited, dp, cc);
+	if (color != sf::Color(255, 255, 255))
+	{
+		int cipher_color = set_color_tab(color);
+		sf::Color color_next = code_hard.getPixel(pos.x, pos.y);
+		int cipher_color_next = set_color_tab(color_next);
+		actions(cipher_color, cipher_color_next, stack_prog, visited, dp, cc);
+	}
 	visited.clear();
 	max_x.clear();
 	while (end_pogram == false)
 	{
 		max_x.push_back(pos);
 
-		sf::Color color = code_hard.getPixel(pos.x, pos.y);
-		int cipher_color = set_color_tab(color);
+		color = code_hard.getPixel(pos.x, pos.y);
 		DFS(pos, blocks_graph, visited, max_x, dp);
+		forming_dir(dp, cc, dir);
 		final_point(code_hard, max_x, dir, dp, pos, end_pogram);
-		sf::Color color_next = code_hard.getPixel(pos.x, pos.y);
-		int cipher_color_next = set_color_tab(color_next);
-		actions(cipher_color, cipher_color_next, stack_prog, visited, dp, cc);
+		if (color != sf::Color(255, 255, 255))
+		{
+			int cipher_color = set_color_tab(color);
+			sf::Color color_next = code_hard.getPixel(pos.x, pos.y);
+			int cipher_color_next = set_color_tab(color_next);
+			actions(cipher_color, cipher_color_next, stack_prog, visited, dp, cc);
+		}
 		visited.clear();
 		max_x.clear();
 	}
