@@ -715,7 +715,7 @@ void actions(int &prev_color, int &col_tab, std::deque<int> stack_prog,  std::se
 
 int main()
 {
-	Interpretator *interpretator = new Interpretator;
+	Interpretator interpretator(int, int);
 	sf::Image code_hard;
 	if (!code_hard.loadFromFile("code.png"))
 		return -1;
@@ -747,8 +747,11 @@ int main()
 			int cipher_color = set_color_tab(color);
 			sf::Color color_next = code_hard.getPixel(pos.x, pos.y);
 			int cipher_color_next = set_color_tab(color_next);
-			interpretator().action()
-				actions(cipher_color, cipher_color_next, stack_prog, visited, dp, cc);
+			int intermediate = cipher_color - cipher_color_next;
+			int change_br = abs(intermediate / 10);
+			int change_tone = abs(intermediate % 10);
+			interpretator(change_br, change_tone);
+				//actions(cipher_color, cipher_color_next, stack_prog, visited, dp, cc);
 		}
 		visited.clear();
 		max_x.clear();
