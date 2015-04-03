@@ -201,15 +201,15 @@ private:
 		visited_.insert(current);
 		std::cout << "we are in (" << current.x << ", " << current.y << ")" << std::endl;
 
-		if (direct_compare(max_x_[0], current, dir_) == 0)
+		if (direct_compare(max_x_[0], current, dp_) == 0)
 			max_x_.push_back(current);
-		else if (direct_compare(max_x_[0], current, dir_) == -1)
+		else if (direct_compare(max_x_[0], current, dp_) == 1)
 		{
 			max_x_.clear();
 			max_x_.push_back(current);
 		}
 
-		for (auto iter = blocks_graph_[current].begin(); iter != blocks_graph_[current].end(); ++iter) // Для каждого ребра
+ 		for (auto iter = blocks_graph_[current].begin(); iter != blocks_graph_[current].end(); ++iter) // Для каждого ребра
 		{
 			point_t &next = *iter;
 			if (visited_.find(next) == visited_.end())
@@ -222,26 +222,27 @@ private:
 		{
 			if (dp_.x == 0)
 			{
-				dir_.x = (-dp_.y);
-				dir_.y = (-dp_.x);
+				dir_.x = dp_.y;
+				dir_.y = dp_.x;
 			}
 			if (dp_.x != 0)
 			{
-				dir_.x = dp_.y;
-				dir_.y = dp_.x;
+				dir_.x = (-dp_.y);
+				dir_.y = (-dp_.x);
 			}
 		}
 		if (turn == "right")
 		{
 			if (dp_.x == 0)
 			{
-				dir_.x = dp_.y;
-				dir_.y = dp_.x;
+				dir_.x = (-dp_.y);
+				dir_.y = (-dp_.x);
+			
 			}
 			if (dp_.x != 0)
 			{
-				dir_.x = (-dp_.y);
-				dir_.y = (-dp_.x);
+				dir_.x = dp_.y;
+				dir_.y = dp_.x;
 			}
 		}
 	};	
@@ -289,7 +290,7 @@ private:
 		auto find_point = std::max_element(max_x_.begin(), max_x_.end(),//что с max??
 			[dir](point_t const &a, point_t const &b)
 		{
-			return direct_compare(a, b, dir) < 0;
+			return direct_compare(a, b, dir) > 0;
 		});
 
 		if ((find_point->x + dp_.x <= code_hard_.getSize().x) && (find_point->y + dp_.y <= code_hard_.getSize().y))
@@ -298,7 +299,7 @@ private:
 			sf::Color color_next = code_hard_.getPixel(next.x, next.y);
 			if ((color_next.r == 0) && (color_next.g == 0) && (color_next.b == 0))//если чёрный, то конец программы
 			{
-				if (step_att <= 8)
+				if (step_att < 4)
 				{
 					if (step_att % 2 == 0)
 					{
@@ -307,19 +308,30 @@ private:
 						else
 							cc_ = "right";
 						step_att++;
+						forming_dir(cc_);
+						visited_.clear();
+						max_x_.clear();
+						max_x_.push_back(pos_);
+						DFS(pos_);
 						final_point(step_att);
 					}
 					else
 					{
-						std::string turn_ = "right";
-						forming_dir(turn_);
+						std::string turn = "right";
+						forming_dir(turn);
+						dp_ = dir_;
+						forming_dir(turn);
 						dp_ = dir_;
 						forming_dir(cc_);
+						visited_.clear();
+						max_x_.clear();
+						max_x_.push_back(pos_);
+						DFS(pos_);
 						step_att++;
 						final_point(step_att);
 					}
 				}
-				if (step_att == 8)
+				if (step_att > 2)
 				{
 					end_program = true;
 					pos_ = next;
@@ -329,9 +341,10 @@ private:
 			{
 				step_att = 0;
 				pos_ = next;
+				std::cout << find_point->x << " - " << find_point->y << "\n";
 			}
 		}
-		std::cout << find_point->x << " - " << find_point->y << "\n";
+
 	};
 	void action(hue_lightness_t const &color_change)
 	{	
