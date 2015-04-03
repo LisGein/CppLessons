@@ -75,21 +75,21 @@ public:
 	{
 		hue_lightness_t()
 			:hue(0)
-			, lightnes(0)
+			, lightness(0)
 		{}
-		hue_lightness_t(size_t hue, size_t lightnes)
+		hue_lightness_t(size_t hue, size_t lightness)
 			:hue(hue)
-			, lightnes(lightnes)
+			, lightness(lightness)
 		{}
 		//constructor
 		size_t hue;
-		size_t lightnes;
+		size_t lightness;
 		//operator <
 		bool operator< (hue_lightness_t const &other) const
 		{
-			if (lightnes < other.lightnes)
+			if (lightness < other.lightness)
 				return true;
-			if (lightnes == other.lightnes && hue < other.hue)
+			if (lightness == other.lightness && hue < other.hue)
 				return true;
 			return false;
 		}
@@ -136,24 +136,47 @@ public:
 	}
 	void step()
 	{ 
-		max_x_.push_back(pos_);
+
 		sf::Color color = code_hard_.getPixel(pos_.x, pos_.y);
-		DFS(pos_);
-		forming_dir(cc_);
-		final_point(step_att);
-		sf::Color color_next = code_hard_.getPixel(pos_.x, pos_.y);
-		if ((color != sf::Color(255, 255, 255)) && (color_next != sf::Color(0, 0, 0)))
-		{		
-			int cipher_color = set_color_tab(color);
-			int cipher_color_next = set_color_tab(color_next);
-			int intermediate = cipher_color - cipher_color_next;
-			hue_lightness_t color_change;
-			color_change.hue = abs(intermediate / 10);
-			color_change.lightnes = abs(intermediate % 10);
-			action(color_change);
+		if (color == sf::Color(255, 255, 255))
+		{
+			if (pos_.x != code_hard_.getSize().x - 1)
+				pos_.x++;
+			else
+			{
+				pos_.x = 0;
+				pos_.y++;
+			}
+			step();
 		}
-		visited_.clear();
-		max_x_.clear();
+		if (end_program != true)
+		{
+			max_x_.push_back(pos_);
+			color = code_hard_.getPixel(pos_.x, pos_.y);
+			DFS(pos_);
+			forming_dir(cc_);
+			final_point(step_att);
+			sf::Color color_next = code_hard_.getPixel(pos_.x, pos_.y);
+			if ((color != sf::Color(255, 255, 255)) && (color_next != sf::Color(0, 0, 0)))
+			{
+				int cipher_color = set_color_tab(color);
+				int cipher_color_next = set_color_tab(color_next);
+				int intermediate = cipher_color - cipher_color_next;
+				hue_lightness_t color_change;
+				color_change.hue = abs(intermediate / 10);
+				int prev_tone = cipher_color % 10;
+				int next_tone = cipher_color_next % 10;
+				if (prev_tone < next_tone)
+				{
+					color_change.lightness = prev_tone - next_tone + 6;
+				} 
+				else
+					color_change.lightness = abs(intermediate % 10);
+				action(color_change);
+			}
+			visited_.clear();
+			max_x_.clear();
+		}
 	};
 private:
 	void blocks()//построение графоф
@@ -299,14 +322,19 @@ private:
 			sf::Color color_next = code_hard_.getPixel(next.x, next.y);
 			if ((color_next.r == 0) && (color_next.g == 0) && (color_next.b == 0))//если чёрный, то конец программы
 			{
+
 				if (step_att < 4)
 				{
 					if (step_att % 2 == 0)
 					{
 						if (cc_ == "right")
+						{
 							cc_ = "left";
+						}
 						else
+						{
 							cc_ = "right";
+						}
 						step_att++;
 						forming_dir(cc_);
 						visited_.clear();
@@ -331,7 +359,7 @@ private:
 						final_point(step_att);
 					}
 				}
-				if (step_att > 2)
+				else
 				{
 					end_program = true;
 					pos_ = next;
