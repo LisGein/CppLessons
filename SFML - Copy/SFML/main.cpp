@@ -101,11 +101,11 @@ public:
 		, cc_("right")
 		, pos_(0, 0)
 		, dir_(0, 0)
-		, end_pogram(false)
+		, end_program(false)
 		, step_att(0)
 	{	
 		blocks();
-	
+		actions_map_[hue_lightness_t(0, 0)] = std::bind(&Interpretator::empty_ac, this);
 		actions_map_[hue_lightness_t(1, 0)] = std::bind(&Interpretator::push, this);
 		actions_map_[hue_lightness_t(2, 0)] = std::bind(&Interpretator::pop, this);
 
@@ -132,7 +132,7 @@ public:
 
 	bool finished()
 	{
-		return end_pogram;
+		return end_program;
 	}
 	void step()
 	{ 
@@ -140,11 +140,11 @@ public:
 		sf::Color color = code_hard_.getPixel(pos_.x, pos_.y);
 		DFS(pos_);
 		forming_dir(cc_);
-		final_point(end_pogram, step_att);
-		if ((color != sf::Color(255, 255, 255)) && (color != sf::Color(0, 0, 0)))
+		final_point(step_att);
+		sf::Color color_next = code_hard_.getPixel(pos_.x, pos_.y);
+		if ((color != sf::Color(255, 255, 255)) && (color_next != sf::Color(0, 0, 0)))
 		{		
 			int cipher_color = set_color_tab(color);
-			sf::Color color_next = code_hard_.getPixel(pos_.x, pos_.y);
 			int cipher_color_next = set_color_tab(color_next);
 			int intermediate = cipher_color - cipher_color_next;
 			hue_lightness_t color_change;
@@ -283,7 +283,7 @@ private:
 		}
 		return hue_lightness;
 	};
-	void final_point(bool &end_pogram, int &step_att)
+	void final_point(int &step_att)
 	{
 		point_t dir = dir_;
 		auto find_point = std::max_element(max_x_.begin(), max_x_.end(),//что с max??
@@ -307,21 +307,23 @@ private:
 						else
 							cc_ = "right";
 						step_att++;
-						final_point(end_pogram, step_att);
+						final_point(step_att);
 					}
 					else
 					{
-						std::string turn = "right";
-						forming_dir(turn);
+						std::string turn_ = "right";
+						forming_dir(turn_);
 						dp_ = dir_;
 						forming_dir(cc_);
 						step_att++;
-						final_point(end_pogram, step_att);
+						final_point(step_att);
 					}
 				}
 				if (step_att == 8)
-					end_pogram = true;
-				
+				{
+					end_program = true;
+					pos_ = next;
+				}
 			}
 			else
 			{
@@ -336,6 +338,10 @@ private:
 		actions_map_[color_change]();//вызов нужной функции из map
 	};
 
+	void empty_ac()
+	{
+		std::cout << "";
+	};
 	void add()
 	{
 		if (stack_prog_.size() > 1)
@@ -544,7 +550,7 @@ private:
 	point_t dir_;
 	blocks_graph_t blocks_graph_;
 	std::vector<point_t> max_x_;
-	bool end_pogram;
+	bool end_program;
 	int step_att;
 };
 
