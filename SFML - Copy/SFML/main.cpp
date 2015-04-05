@@ -105,6 +105,8 @@ public:
 		, step_att(0)
 	{	
 		blocks();
+		
+
 		actions_map_[hue_lightness_t(0, 0)] = std::bind(&Interpretator::empty_ac, this);
 		actions_map_[hue_lightness_t(1, 0)] = std::bind(&Interpretator::push, this);
 		actions_map_[hue_lightness_t(2, 0)] = std::bind(&Interpretator::pop, this);
@@ -140,13 +142,8 @@ public:
 		sf::Color color = code_hard_.getPixel(pos_.x, pos_.y);
 		if (color == sf::Color(255, 255, 255))
 		{
-			if (pos_.x != code_hard_.getSize().x - 1)
-				pos_.x++;
-			else
-			{
-				pos_.x = 0;
-				pos_.y++;
-			}
+			forming_dir(cc_);
+			change_white();
 			step();
 		}
 		if (end_program != true)
@@ -157,13 +154,25 @@ public:
 			forming_dir(cc_);
 			final_point(step_att);
 			sf::Color color_next = code_hard_.getPixel(pos_.x, pos_.y);
-			if ((color != sf::Color(255, 255, 255)) && (color_next != sf::Color(0, 0, 0)))
+			if ((color_next != sf::Color(255, 255, 255)) && (color_next != sf::Color(0, 0, 0)))
 			{
-				int cipher_color = set_color_tab(color);
-				int cipher_color_next = set_color_tab(color_next);
-				int intermediate = cipher_color - cipher_color_next;
 				hue_lightness_t color_change;
-				color_change.hue = abs(intermediate / 10);
+				int cipher_color = set_color_tab(color);
+				std::cout << (int)color.r << " " << (int)color.g << " " << (int)color.b << " - " << cipher_color << std::endl;
+				int cipher_color_next = set_color_tab(color_next);
+				int light_color = cipher_color / 10;
+				int light_color_next = cipher_color_next / 10;
+				if (light_color > light_color_next)
+				{
+					if (light_color == 2)
+					{
+						color_change.hue = 2;
+					}
+					else
+						color_change.hue = 1;
+				}
+				else
+					color_change.hue = abs(light_color_next - light_color);
 				int prev_tone = cipher_color % 10;
 				int next_tone = cipher_color_next % 10;
 				if (prev_tone < next_tone)
@@ -171,13 +180,17 @@ public:
 					color_change.lightness = prev_tone - next_tone + 6;
 				} 
 				else
+				{
+					int intermediate = prev_tone - next_tone;
 					color_change.lightness = abs(intermediate % 10);
+				}
 				action(color_change);
+				std::cout << visited_.size() << std::endl;
 			}
 			visited_.clear();
 			max_x_.clear();
 		}
-	};
+	}
 private:
 	void blocks()//построение графоф
 	{
@@ -218,11 +231,11 @@ private:
 					}
 			}
 		}
-	};
+	}
 	void DFS(point_t current)
 	{
 		visited_.insert(current);
-		std::cout << "we are in (" << current.x << ", " << current.y << ")" << std::endl;
+		//std::cout << "we are in (" << current.x << ", " << current.y << ")" << std::endl;
 
 		if (direct_compare(max_x_[0], current, dp_) == 0)
 			max_x_.push_back(current);
@@ -238,7 +251,7 @@ private:
 			if (visited_.find(next) == visited_.end())
 				DFS(next); // Запускаемся из соседа		
 		}
-	};
+	}
 	void forming_dir(std::string &turn)
 	{
 		if (turn == "left")
@@ -268,14 +281,14 @@ private:
 				dir_.y = dp_.x;
 			}
 		}
-	};	
+	}
 	int set_color_tab(sf::Color &color)
 	{
 		int hue_lightness = 0;
 
 		if ((color.r == 255) || (color.g == 255) || (color.b == 255))//формирование оттенка
 		{
-			if ((color.r == 12) || (color.g == 12) || (color.b == 12))
+			if ((color.r == 192) || (color.g == 192) || (color.b == 192))
 				hue_lightness = 10;//самый светлый цвет
 			else
 				hue_lightness = 20;//средний
@@ -288,6 +301,10 @@ private:
 		{
 			if ((hue_lightness == 10) && (color.g == 255))
 				hue_lightness += 3;//голубой
+			else if ((hue_lightness == 20) && (color.g == 255))
+				hue_lightness += 3;//голубой
+			else if ((hue_lightness == 30) && (color.g == 192))
+				hue_lightness += 3;//голубой
 			else
 				hue_lightness += 6;//красный
 		}
@@ -295,18 +312,26 @@ private:
 		{
 			if ((hue_lightness == 10) && (color.r == 255))
 				hue_lightness += 5;//жёлтый
+			else if ((hue_lightness == 20) && (color.r == 255))
+				hue_lightness += 5;//жёлтый
+			else if ((hue_lightness == 30) && (color.r == 192))
+				hue_lightness += 5;//жёлтый
 			else
 				hue_lightness += 2;//синий
 		}
 		else if (color.r == color.b)
 		{
-			if ((hue_lightness == 10) && (color.r == 12))
+			if ((hue_lightness == 10) && (color.r == 192))
+				hue_lightness += 4;//зелёный
+			else if((hue_lightness == 20) && (color.r == 0))
+				hue_lightness += 4;//зелёный
+			else if((hue_lightness == 30) && (color.r == 0))
 				hue_lightness += 4;//зелёный
 			else
 				hue_lightness += 1;//фиолетовый
 		}
 		return hue_lightness;
-	};
+	}
 	void final_point(int &step_att)
 	{
 		point_t dir = dir_;
@@ -323,7 +348,7 @@ private:
 			if ((color_next.r == 0) && (color_next.g == 0) && (color_next.b == 0))//если чёрный, то конец программы
 			{
 
-				if (step_att < 4)
+			/*	if (step_att < 8)
 				{
 					if (step_att % 2 == 0)
 					{
@@ -337,52 +362,72 @@ private:
 						}
 						step_att++;
 						forming_dir(cc_);
-						visited_.clear();
-						max_x_.clear();
-						max_x_.push_back(pos_);
-						DFS(pos_);
-						final_point(step_att);
 					}
 					else
 					{
 						std::string turn = "right";
 						forming_dir(turn);
 						dp_ = dir_;
-						forming_dir(turn);
-						dp_ = dir_;
 						forming_dir(cc_);
-						visited_.clear();
-						max_x_.clear();
-						max_x_.push_back(pos_);
-						DFS(pos_);
 						step_att++;
-						final_point(step_att);
 					}
+
 				}
 				else
-				{
+				{*/
 					end_program = true;
-					pos_ = next;
-				}
+				//}
 			}
 			else
 			{
 				step_att = 0;
 				pos_ = next;
-				std::cout << find_point->x << " - " << find_point->y << "\n";
+				//std::cout << find_point->x << " - " << find_point->y << "\n";
 			}
 		}
 
-	};
+	}
 	void action(hue_lightness_t const &color_change)
 	{	
 		actions_map_[color_change]();//вызов нужной функции из map
-	};
+	}
+	void change_white()
+	{
+		int x = code_hard_.getSize().x;
+		if ((pos_.x != code_hard_.getSize().x - 1) && ((pos_.y != code_hard_.getSize().y - 1)) && (pos_.x != 0) && (pos_.y != 0))
+		{
+			pos_.x += dp_.x;
+			pos_.y += dp_.y;
+		}
+		else
+		{
+			if (pos_.x == code_hard_.getSize().x - 1)
+			{
+				pos_.x = 0;
+				pos_.y += dir_.y;
+			}
+			else if (pos_.y == code_hard_.getSize().y - 1)
+			{
+				pos_.y = 0;
+				pos_.x += dir_.x;
+			}
+			else if (pos_.x == 0)
+			{
+				pos_.x = code_hard_.getSize().x - 1;
+				pos_.y += dir_.y;
+			}
+			else if (pos_.y == 0)
+			{
+				pos_.y = code_hard_.getSize().y - 1;
+				pos_.x += dir_.x;
+			}
+		}
+	}
 
 	void empty_ac()
 	{
 		std::cout << "";
-	};
+	}
 	void add()
 	{
 		if (stack_prog_.size() > 1)
@@ -392,7 +437,7 @@ private:
 			stack_prog_.pop_back();
 			stack_prog_.push_back(mod_stack);
 		}
-	};
+	}
 	void substract()
 	{
 		if (stack_prog_.size() > 1)
@@ -402,16 +447,16 @@ private:
 			stack_prog_.pop_back();
 			stack_prog_.push_back(mod_stack);
 		}
-	};
+	}
 	void push()
 	{
 		stack_prog_.push_back(visited_.size()); 
-	};
+	}
 	void pop()
 	{
 		if (stack_prog_.size() != 0)
 			stack_prog_.pop_back();
-	};
+	}
 	void multiply()
 	{
 		if (stack_prog_.size() > 1)
@@ -421,7 +466,7 @@ private:
 			stack_prog_.pop_back();
 			stack_prog_.push_back(mod_stack);
 		}
-	};
+	}
 	void divide()
 	{
 		if (stack_prog_.size() > 1)
@@ -431,7 +476,7 @@ private:
 			stack_prog_.pop_back();
 			stack_prog_.push_back(mod_stack);
 		}
-	};
+	}
 	void mod()
 	{
 		if (stack_prog_.size() > 1)
@@ -441,7 +486,7 @@ private:
 			stack_prog_.pop_back();
 			stack_prog_.push_back(mod_stack);
 		}
-	};
+	}
 	void not()
 	{
 		if (stack_prog_.size() != 0)
@@ -451,7 +496,7 @@ private:
 			else
 				stack_prog_[stack_prog_.size() - 1] = 0;
 		}
-	};
+	}
 	void greater()
 	{
 		if (stack_prog_.size() != 0)
@@ -470,7 +515,7 @@ private:
 					stack_prog_.push_back(0);
 				}
 			}
-	};
+	}
 	void pointer()
 	{
 		if (stack_prog_.size() != 0)
@@ -485,7 +530,7 @@ private:
 			dp_ = dir;
 			forming_dir(direction);
 		}
-	};
+	}
 	void switch_array()
 	{
 		if (stack_prog_.size() != 0)
@@ -500,7 +545,7 @@ private:
 			}
 			stack_prog_.pop_back();
 		}
-	};
+	}
 	void duplicate()
 	{
 		if (stack_prog_.size() != 0)
@@ -508,7 +553,7 @@ private:
 			int duplicated = stack_prog_[stack_prog_.size() - 1];
 			stack_prog_.push_back(duplicated);
 		}
-	};
+	}
 	void roll()
 	{
 		if (stack_prog_.size() != 0)
@@ -545,13 +590,13 @@ private:
 				}
 			}
 		}
-	};
+	}
 	void in_int()
 	{
 		int input_num;
 		std::cin >> input_num;
 		stack_prog_.push_back(input_num);
-	};
+	}
 	void in_char()
 	{
 		char word;
@@ -561,24 +606,22 @@ private:
 			int alp_in_numb = (char)tolower(word) - 'a';
 			stack_prog_.push_back(alp_in_numb);
 		}
-	};
+	}
 	void out_int()
 	{
 		if (stack_prog_.size() != 0)
 		{
 			std::cout << stack_prog_[stack_prog_.size() - 1] << std::endl;
-			stack_prog_.pop_back();
 		}
-	};
+	}
 	void out_char()
 	{
 		if (stack_prog_.size() != 0)
 		{
 			char alp_in_numb = stack_prog_[stack_prog_.size() - 1] + 'a';
 			std::cout << alp_in_numb << std::endl;
-			stack_prog_.pop_back();
 		}
-	};
+	}
 
 	std::map<hue_lightness_t, action_func_t> actions_map_;
 	std::deque<int> stack_prog_;
@@ -598,7 +641,7 @@ private:
 int main()
 {
 	sf::Image code_hard;
-	if (!code_hard.loadFromFile("code.png"))
+	if (!code_hard.loadFromFile("h.png"))
 		return -1;
 	Interpretator interp(code_hard);	
 	while (!interp.finished())
