@@ -146,9 +146,16 @@ public:
 		max_x_.push_back(pos_);
 		DFS(pos_);
 		forming_dir(cc_);
-		final_point(step_att);
-
+		final_point();
+		
 		temp_color = code_hard_.getPixel(pos_.x, pos_.y);
+		while (temp_color == sf::Color(0, 0, 0))
+		{
+			exit_black();
+			temp_color = code_hard_.getPixel(pos_.x, pos_.y);
+			if (end_program == true)
+				break;
+		}
 		while (temp_color == sf::Color(255, 255, 255))
 		{
 			change_max();
@@ -306,7 +313,7 @@ private:
 		}
 		return hue_lightness;
 	}
-	void final_point(int &step_att)
+	void final_point()
 	{
 		point_t dir = dir_;
 		auto find_point = std::max_element(max_x_.begin(), max_x_.end(),
@@ -318,43 +325,8 @@ private:
 		if ((find_point->x + dp_.x <= code_hard_.getSize().x) && (find_point->y + dp_.y <= code_hard_.getSize().y))
 		{
 			point_t next(find_point->x + dp_.x, find_point->y + dp_.y);
-			sf::Color color_next = code_hard_.getPixel(next.x, next.y);
-			if ((color_next.r == 0) && (color_next.g == 0) && (color_next.b == 0))//если чёрный, то конец программы
-			{
-
-				if (step_att < 8)
-				{
-					if (step_att % 2 == 0)
-					{
-						if (cc_ == "right")
-						{
-							cc_ = "left";
-						}
-						else
-						{
-							cc_ = "right";
-						}
-						step_att++;
-						forming_dir(cc_);
-					}
-					else
-					{
-						std::string turn = "right";
-						forming_dir(turn);
-						dp_ = dir_;
-						forming_dir(cc_);
-						step_att++;
-					}
-
-				}
-				else				
-					end_program = true;			
-			}
-			else
-			{
-				step_att = 0;
-				pos_ = next;
-			}
+			sf::Color color_next = code_hard_.getPixel(next.x, next.y);			
+			pos_ = next;			
 		}
 
 	}
@@ -412,12 +384,11 @@ private:
 		}
 		else
 			color_change.hue = abs(light_color_next - light_color);
+
 		int prev_tone = cipher_color % 10;
 		int next_tone = cipher_color_next % 10;
 		if (prev_tone < next_tone)
-		{
 			color_change.lightness = prev_tone - next_tone + 6;
-		}
 		else
 		{
 			int intermediate = prev_tone - next_tone;
@@ -433,7 +404,38 @@ private:
 				max_temp.push_back(max_x_[i]);				
 		}
 		max_x_ = max_temp;
-		final_point(step_att);				
+		final_point();				
+	}
+	void exit_black()
+	{
+		if (step_att < 8)
+		{
+			if (step_att % 2 == 0)
+			{
+				if (cc_ == "right")
+				{
+					cc_ = "left";
+				}
+				else
+				{
+					cc_ = "right";
+				}
+				step_att++;
+				forming_dir(cc_);
+			}
+			else
+			{
+				std::string turn = "right";
+				forming_dir(turn);
+				dp_ = dir_;
+				forming_dir(cc_);
+				step_att++;
+			}
+
+		}
+		else
+			end_program = true;
+		final_point();
 	}
 
 	void empty_ac()
@@ -650,8 +652,8 @@ private:
 	int step_att;
 	sf::Color temp_color;
 	int cipher_color;
-	int temp_cipher;
 	int cipher_color_next;
+	int temp_cipher;
 	hue_lightness_t color_change;
 };
 
