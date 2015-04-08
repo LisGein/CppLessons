@@ -106,7 +106,6 @@ public:
 	{	
 		blocks();
 		
-
 		actions_map_[hue_lightness_t(0, 0)] = std::bind(&Interpretator::empty_ac, this);
 		actions_map_[hue_lightness_t(1, 0)] = std::bind(&Interpretator::push, this);
 		actions_map_[hue_lightness_t(2, 0)] = std::bind(&Interpretator::pop, this);
@@ -138,58 +137,34 @@ public:
 	}
 	void step()
 	{ 
+		temp_color = code_hard_.getPixel(pos_.x, pos_.y);
+		if (temp_color == sf::Color(255, 255, 255))
+			change_color();
+		sf::Color color = temp_color;
+		cipher_color = set_color_tab(temp_color);
 
-		sf::Color color = code_hard_.getPixel(pos_.x, pos_.y);
-		if (color == sf::Color(255, 255, 255))
+		max_x_.push_back(pos_);
+		DFS(pos_);
+		forming_dir(cc_);
+		final_point(step_att);
+
+		temp_color = code_hard_.getPixel(pos_.x, pos_.y);
+		while (temp_color == sf::Color(255, 255, 255))
 		{
-			forming_dir(cc_);
-			change_white();
-			step();
+			change_max();
+			temp_color = code_hard_.getPixel(pos_.x, pos_.y);
 		}
-		if (end_program != true)
+				
+		sf::Color color_next = temp_color;
+		cipher_color_next = set_color_tab(temp_color);
+
+		if ((color_next != sf::Color(255, 255, 255)) && (color_next != sf::Color(0, 0, 0)))
 		{
-			max_x_.push_back(pos_);
-			color = code_hard_.getPixel(pos_.x, pos_.y);
-			DFS(pos_);
-			forming_dir(cc_);
-			final_point(step_att);
-			sf::Color color_next = code_hard_.getPixel(pos_.x, pos_.y);
-			if ((color_next != sf::Color(255, 255, 255)) && (color_next != sf::Color(0, 0, 0)))
-			{
-				hue_lightness_t color_change;
-				int cipher_color = set_color_tab(color);
-				std::cout << (int)color.r << " " << (int)color.g << " " << (int)color.b << " - " << cipher_color << std::endl;
-				int cipher_color_next = set_color_tab(color_next);
-				int light_color = cipher_color / 10;
-				int light_color_next = cipher_color_next / 10;
-				if (light_color > light_color_next)
-				{
-					if (light_color == 2)
-					{
-						color_change.hue = 2;
-					}
-					else
-						color_change.hue = 1;
-				}
-				else
-					color_change.hue = abs(light_color_next - light_color);
-				int prev_tone = cipher_color % 10;
-				int next_tone = cipher_color_next % 10;
-				if (prev_tone < next_tone)
-				{
-					color_change.lightness = prev_tone - next_tone + 6;
-				} 
-				else
-				{
-					int intermediate = prev_tone - next_tone;
-					color_change.lightness = abs(intermediate % 10);
-				}
-				action(color_change);
-				std::cout << visited_.size() << std::endl;
-			}
-			visited_.clear();
-			max_x_.clear();
-		}
+			forming_action();
+			action(color_change);
+		}			
+		visited_.clear();
+		max_x_.clear();		
 	}
 private:
 	void blocks()//построение графоф
@@ -235,7 +210,6 @@ private:
 	void DFS(point_t current)
 	{
 		visited_.insert(current);
-		//std::cout << "we are in (" << current.x << ", " << current.y << ")" << std::endl;
 
 		if (direct_compare(max_x_[0], current, dp_) == 0)
 			max_x_.push_back(current);
@@ -335,7 +309,7 @@ private:
 	void final_point(int &step_att)
 	{
 		point_t dir = dir_;
-		auto find_point = std::max_element(max_x_.begin(), max_x_.end(),//что с max??
+		auto find_point = std::max_element(max_x_.begin(), max_x_.end(),
 			[dir](point_t const &a, point_t const &b)
 		{
 			return direct_compare(a, b, dir) > 0;
@@ -348,7 +322,7 @@ private:
 			if ((color_next.r == 0) && (color_next.g == 0) && (color_next.b == 0))//если чёрный, то конец программы
 			{
 
-			/*	if (step_att < 8)
+				if (step_att < 8)
 				{
 					if (step_att % 2 == 0)
 					{
@@ -373,55 +347,93 @@ private:
 					}
 
 				}
-				else
-				{*/
-					end_program = true;
-				//}
+				else				
+					end_program = true;			
 			}
 			else
 			{
 				step_att = 0;
 				pos_ = next;
-				//std::cout << find_point->x << " - " << find_point->y << "\n";
 			}
 		}
 
 	}
 	void action(hue_lightness_t const &color_change)
-	{	
+	{
 		actions_map_[color_change]();//вызов нужной функции из map
 	}
-	void change_white()
+	void change_color()
 	{
-		int x = code_hard_.getSize().x;
-		if ((pos_.x != code_hard_.getSize().x - 1) && ((pos_.y != code_hard_.getSize().y - 1)) && (pos_.x != 0) && (pos_.y != 0))
+		while (temp_color == sf::Color(255, 255, 255))
 		{
-			pos_.x += dp_.x;
-			pos_.y += dp_.y;
+			forming_dir(cc_);
+			int x = code_hard_.getSize().x;
+			if ((pos_.x != code_hard_.getSize().x - 1) && ((pos_.y != code_hard_.getSize().y - 1)) && (pos_.x != 0) && (pos_.y != 0))
+			{
+				pos_.x += dp_.x;
+				pos_.y += dp_.y;
+			}
+			else
+			{
+				if (pos_.x == code_hard_.getSize().x - 1)
+				{
+					pos_.x = 0;
+					pos_.y += dir_.y;
+				}
+				else if (pos_.y == code_hard_.getSize().y - 1)
+				{
+					pos_.y = 0;
+					pos_.x += dir_.x;
+				}
+				else if (pos_.x == 0)
+				{
+					pos_.x = code_hard_.getSize().x - 1;
+					pos_.y += dir_.y;
+				}
+				else if (pos_.y == 0)
+				{
+					pos_.y = code_hard_.getSize().y - 1;
+					pos_.x += dir_.x;
+				}
+			}
+			step();
+		}
+	}
+	void forming_action()
+	{		
+		int light_color = cipher_color / 10;
+		int light_color_next = cipher_color_next / 10;
+		if (light_color > light_color_next)
+		{
+			if (light_color == 2)		
+				color_change.hue = 2;			
+			else
+				color_change.hue = 1;
+		}
+		else
+			color_change.hue = abs(light_color_next - light_color);
+		int prev_tone = cipher_color % 10;
+		int next_tone = cipher_color_next % 10;
+		if (prev_tone < next_tone)
+		{
+			color_change.lightness = prev_tone - next_tone + 6;
 		}
 		else
 		{
-			if (pos_.x == code_hard_.getSize().x - 1)
-			{
-				pos_.x = 0;
-				pos_.y += dir_.y;
-			}
-			else if (pos_.y == code_hard_.getSize().y - 1)
-			{
-				pos_.y = 0;
-				pos_.x += dir_.x;
-			}
-			else if (pos_.x == 0)
-			{
-				pos_.x = code_hard_.getSize().x - 1;
-				pos_.y += dir_.y;
-			}
-			else if (pos_.y == 0)
-			{
-				pos_.y = code_hard_.getSize().y - 1;
-				pos_.x += dir_.x;
-			}
+			int intermediate = prev_tone - next_tone;
+			color_change.lightness = abs(intermediate % 10);
 		}
+	}
+	void change_max()
+	{
+		std::vector<point_t> max_temp;
+		for (int i = 0; i < max_x_.size(); ++i)
+		{
+			if ((max_x_[i].x != pos_.x-dp_.x) || (max_x_[i].y != pos_.y-dp_.y))
+				max_temp.push_back(max_x_[i]);				
+		}
+		max_x_ = max_temp;
+		final_point(step_att);				
 	}
 
 	void empty_ac()
@@ -611,15 +623,15 @@ private:
 	{
 		if (stack_prog_.size() != 0)
 		{
-			std::cout << stack_prog_[stack_prog_.size() - 1] << std::endl;
+			std::cout << stack_prog_[stack_prog_.size() - 1];
 		}
 	}
 	void out_char()
 	{
 		if (stack_prog_.size() != 0)
 		{
-			char alp_in_numb = stack_prog_[stack_prog_.size() - 1] + 'a';
-			std::cout << alp_in_numb << std::endl;
+			char alp_in_numb = stack_prog_[stack_prog_.size() - 1];
+			std::cout << alp_in_numb;
 		}
 	}
 
@@ -636,18 +648,24 @@ private:
 	std::vector<point_t> max_x_;
 	bool end_program;
 	int step_att;
+	sf::Color temp_color;
+	int cipher_color;
+	int temp_cipher;
+	int cipher_color_next;
+	hue_lightness_t color_change;
 };
 
 int main()
 {
 	sf::Image code_hard;
-	if (!code_hard.loadFromFile("h.png"))
+	if (!code_hard.loadFromFile("h1.png"))
 		return -1;
 	Interpretator interp(code_hard);	
 	while (!interp.finished())
 	{
 		interp.step();
 	}
+	code_hard.saveToFile("h1.png");
 	system("pause");
 	return 0;
 }
