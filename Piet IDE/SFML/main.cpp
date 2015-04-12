@@ -667,7 +667,6 @@ int main()
 	{
 		interp.step();
 	}
-	code_hard.saveToFile("h1.png");
 	system("pause");
 	return 0;
 }
